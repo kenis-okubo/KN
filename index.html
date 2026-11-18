@@ -65,7 +65,8 @@ let port=null, reader=null, readLoopRunning=false, buffer="";
 let measuring=false, timer=null, endTimer=null, startTime=null;
 let liveTimer=null, latestMeasurement=null;
 let pending=[];
-let records=[];\nlet cameraStream=null, photoRecords=[], latestLiveMeasurement=null;
+let records=[];
+let cameraStream=null, photoRecords=[], latestLiveMeasurement=null;
 const $=id=>document.getElementById(id);
 const encoder=new TextEncoder();
 const decoder=new TextDecoder();
@@ -78,6 +79,11 @@ function updateButtons(){
  $("stop").disabled=!measuring;
 }
 async function connect(){
+ if(!("serial" in navigator)){
+  msg("このブラウザではWeb Serialを利用できません。ChromeまたはEdgeで開いてください。");
+  alert("Web Serialを利用できません。Windows/ChromebookのChromeまたはEdgeで、HTTPSのページを開いてください。");
+  return;
+ }
  if(!("serial" in navigator)){msg("このブラウザはWeb Serial APIに対応していません。対応ブラウザで開いてください。");return}
  try{
    port=await navigator.serial.requestPort();
