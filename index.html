@@ -25,7 +25,12 @@
 .chart-tooltip{position:absolute;z-index:30;display:none;min-width:190px;max-width:270px;background:#fff;border:1px solid #cbd8df;border-radius:9px;box-shadow:0 5px 18px #0002;padding:10px 12px;font-size:12px;line-height:1.55;pointer-events:none}
 .chart-tooltip b{font-size:15px}.chart-tooltip img{display:block;width:100%;max-height:150px;object-fit:contain;background:#eef2f4;border-radius:6px;margin-top:7px}
 .chart-legend{display:flex;gap:14px;align-items:center;font-size:12px;color:#526171;margin:5px 0 0}.legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.lg-auto{background:#1479df}.lg-manual{background:#21a45b}.lg-photo{background:#e64a4a}
-.fs-point-tip{position:fixed;z-index:10050;display:none;background:#fff;border:1px solid #cbd8df;border-radius:9px;box-shadow:0 5px 18px #0003;padding:10px 12px;font-size:13px;line-height:1.55;max-width:300px}.fs-point-tip img{display:block;width:100%;max-height:170px;object-fit:contain;margin-top:7px;border-radius:6px}@media(max-width:850px){.content{grid-template-columns:1fr}.topbar{flex-wrap:wrap;padding:14px 18px}.top-actions{width:100%;margin-left:0}.camera-body{grid-template-columns:1fr}.stats{flex-wrap:wrap}}
+.fs-point-tip{position:fixed;z-index:10050;display:none;background:#fff;border:1px solid #cbd8df;border-radius:9px;box-shadow:0 5px 18px #0003;padding:10px 12px;font-size:13px;line-height:1.55;max-width:300px}.fs-point-tip img{display:block;width:100%;max-height:170px;object-fit:contain;margin-top:7px;border-radius:6px}
+.chart-actions{display:flex;gap:8px;align-items:center}
+.chart-tooltip{pointer-events:auto;cursor:move;user-select:none}
+.chart-tooltip.dragging{opacity:.94}
+@media(max-width:850px){.content{grid-template-columns:1fr}.topbar{flex-wrap:wrap;padding:14px 18px}.top-actions{width:100%;margin-left:0}.camera-body{grid-template-columns:1fr}.stats{flex-wrap:wrap}}
+.record-memo{width:170px;min-height:42px;resize:vertical;border:1px solid #cbd8df;border-radius:5px;padding:5px;font:inherit}.tip-memo-label{margin-top:8px;font-weight:bold}.chart-tooltip .record-memo,.fs-point-tip .record-memo{width:100%;box-sizing:border-box}.photo-save-modal{display:none;position:fixed;inset:0;z-index:10000;background:#0008;align-items:center;justify-content:center;padding:16px}.photo-save-modal.show{display:flex}.photo-save-box{background:white;border-radius:12px;padding:20px;max-width:850px;width:100%;max-height:85vh;overflow:auto;color:#172b3a}.photo-save-head,.photo-save-actions{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}.photo-save-head h3{margin:0}.photo-save-actions{justify-content:flex-start;margin:15px 0}.photo-save-box button{padding:8px 12px;border-radius:7px;border:1px solid #bdcbd5;background:#f7fafc;cursor:pointer}.photo-save-row{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #ddd}.photo-save-row img{width:110px;height:78px;object-fit:contain;background:#eee}.photo-save-row>div{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}.photo-save-row button{flex-shrink:0}
 </style></head>
 <body>
 <header class="topbar"><div class="brand">Kenis</div><div class="title">電子てんびん Webアプリ</div><div class="top-actions"><span id="conn" class="status">未接続</span><button id="connect">天びんに接続</button><button id="disconnect" disabled>切断</button><button id="csv">CSV保存</button></div></header>
@@ -51,7 +56,10 @@
 </aside>
 <main class="main panel">
 <nav class="tabs"><div class="tab active" data-tab="graph">グラフ</div><div class="tab" data-tab="data">測定データ</div></nav>
-<div id="graph" class="tab-panel active"><div class="chart-wrap"><div class="chart-head"><h2>質量 [g]</h2><button id="chartFS" class="fsbtn">⛶ グラフを全画面</button></div><div class="stats"><span>測定回数 <b id="count">0</b></span><span>経過時間 <b id="elapsed">0.0 s</b></span><span>状態 <b id="state">待機</b></span></div><div class="chart-legend"><span><i class="legend-dot lg-auto"></i>自動記録</span><span><i class="legend-dot lg-manual"></i>手動記録</span><span><i class="legend-dot lg-photo"></i>写真</span></div>
+<div id="graph" class="tab-panel active"><div class="chart-wrap"><div class="chart-head"><h2>質量 [g]</h2><div class="chart-actions">
+<button id="saveGraphImage" class="fsbtn">グラフ画像保存</button>
+<button id="chartFS" class="fsbtn">⛶ グラフを全画面</button>
+</div></div><div class="stats"><span>測定回数 <b id="count">0</b></span><span>経過時間 <b id="elapsed">0.0 s</b></span><span>状態 <b id="state">待機</b></span></div><div class="chart-legend"><span><i class="legend-dot lg-auto"></i>自動記録</span><span><i class="legend-dot lg-manual"></i>手動記録</span><span><i class="legend-dot lg-photo"></i>写真</span></div>
 <canvas id="chart" width="1100" height="330"></canvas><div id="chartTooltip" class="chart-tooltip"></div></div>
 <div class="graph-settings">
   <h2>測定設定</h2>
@@ -60,18 +68,18 @@
     <div class="setting-field"><label>測定時間</label><select id="duration"><option value="0">制限なし</option><option value="10">10秒</option><option value="30">30秒</option><option value="60" selected>1分</option><option value="300">5分</option><option value="600">10分</option><option value="1800">30分</option><option value="3600">60分</option></select></div>
     <button id="start" class="btn primary" disabled>▶ 記録開始</button>
     <button id="stop" class="btn stop" disabled>■ 記録停止</button>
-    <button id="single" class="btn outline" disabled>● 現在値を記録</button>
+    <button id="single" class="btn outline" disabled>● 現在の値を記録</button>
     <button id="clear" class="btn outline">データを消去</button>
   </div>
   <p id="message" class="msg"></p>
 </div>
 </div>
-<div id="data" class="tab-panel"><div class="data-title">測定データ一覧</div><div class="table-wrap"><table><thead><tr><th>時刻</th><th>経過時間 [s]</th><th>質量 [g]</th><th>安定</th><th>記録方法</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
+<div id="data" class="tab-panel"><div class="data-title">測定データ一覧</div><div class="table-wrap"><table><thead><tr><th>時刻</th><th>経過時間 [s]</th><th>質量 [g]</th><th>安定</th><th>記録方法</th><th>メモ</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
 </main></div>
 
 <div id="valueOverlay" class="overlay"><div class="ovbar">現在の質量<button class="back close">戻る（Esc）</button></div><div class="ovcontent"><div class="big"><span id="fsWeight" class="n">--.--</span><span id="fsUnit" class="u">g</span><br><span id="fsStability" class="stability">未測定</span></div></div></div>
 <div id="chartOverlay" class="overlay"><div class="ovbar">リアルタイムグラフ<button class="back close">戻る（Esc）</button></div><div class="ovcontent"><div class="fschartbox"><canvas id="fsChart" width="1400" height="700"></canvas></div></div></div>
-<div id="cameraOverlay" class="overlay"><div class="ovbar">カメラ・写真<button class="back close">戻る（Esc）</button></div><div class="camera-body"><div class="preview"><video id="video" autoplay playsinline muted></video></div><div class="camside"><div class="camcard"><h3>カメラ設定</h3><select id="cameraSelect"><option value="">カメラを選択</option></select><div class="camactions"><button id="camStart">カメラ開始</button><button id="camStop" disabled>カメラ停止</button><button id="capture" class="capture" disabled>📷 写真＋現在値を記録</button></div></div><div class="camcard"><h3>最新の記録</h3><img id="latestPhoto"><div id="latestMeta" class="msg">まだ写真はありません。</div></div><div class="camcard"><h3>写真付き記録</h3><div id="photoGrid" class="photogrid"></div></div></div></div></div>
+<div id="photoSaveModal" class="photo-save-modal" role="dialog" aria-modal="true"><div class="photo-save-box"><div class="photo-save-head"><h3>写真・測定データの保存</h3><button id="photoSaveClose">閉じる</button></div><p>保存する写真を選択してください。画像には測定値・時刻・経過時間・メモを記載します。</p><div class="photo-save-actions"><button id="photoSelectAll">すべて選択</button><button id="photoSelectNone">選択解除</button><button id="photoSaveSelected">選択した写真を保存</button></div><div id="photoSaveList"></div></div></div><div id="cameraOverlay" class="overlay"><div class="ovbar">カメラ・写真<button class="back close">戻る（Esc）</button></div><div class="camera-body"><div class="preview"><video id="video" autoplay playsinline muted></video></div><div class="camside"><div class="camcard"><h3>カメラ設定</h3><select id="cameraSelect"><option value="">カメラを選択</option></select><div class="camactions"><button id="camStart">カメラ開始</button><button id="camStop" disabled>カメラ停止</button><button id="capture" class="capture" disabled>📷 写真＋現在値を記録</button><button id="photoSaveOpen">写真保存</button></div></div><div class="camcard"><h3>最新の記録</h3><img id="latestPhoto"><div id="latestMeta" class="msg">まだ写真はありません。</div></div><div class="camcard"><h3>写真付き記録</h3><div id="photoGrid" class="photogrid"></div></div></div></div></div>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -113,7 +121,7 @@ function handleLine(line){
  const m=line.match(/([-+]?\d+(?:\.\d+)?)\s*([a-zA-Z]+)?\s*(\?)?/);if(!m)return;
  const value=Number(m[1]),unit=m[2]||"g",stable=!line.includes("?");
  latest={value,unit,stable,time:new Date()};showCurrent();
- const req=pending.shift();if(req?.record)addRecord(value,unit,stable,req.kind);
+ const req=pending.shift();if(req?.record)addRecord(value,unit,stable,req.kind,req.requestedElapsed,req.requestedTime);
 }
 function showCurrent(){
  if(!latest)return;
@@ -124,7 +132,17 @@ function showCurrent(){
 }
 async function request(kind="ライブ",record=false){
  if(!writer||pending.length)return;
- try{pending.push({kind,record});await writer.write(new TextEncoder().encode("IP\r"));setTimeout(()=>{if(pending.length)pending.shift()},900)}catch(e){pending=[];msg("送信エラー: "+e.message)}
+ try{
+  const requestedTime=new Date();
+  let requestedElapsed=startTime?(performance.now()-startTime)/1000:0;
+  if(kind==="自動"&&startTime){
+    const step=Number($("interval").value)/1000;
+    requestedElapsed=Math.round(requestedElapsed/step)*step;
+  }
+  pending.push({kind,record,requestedTime,requestedElapsed});
+  await writer.write(new TextEncoder().encode("IP\r"));
+  setTimeout(()=>{if(pending.length)pending.shift()},900);
+ }catch(e){pending=[];msg("送信エラー: "+e.message)}
 }
 function startLive(){stopLive();liveTimer=setInterval(()=>{if(!recording)request("ライブ",false)},500);request("ライブ",false)}
 function stopLive(){if(liveTimer)clearInterval(liveTimer);liveTimer=null}
@@ -134,13 +152,16 @@ function startRecording(){
  const sec=Number($("duration").value);if(sec>0)durationTimer=setTimeout(stopRecording,sec*1000);
 }
 function stopRecording(){recording=false;if(recordTimer)clearInterval(recordTimer);if(durationTimer)clearTimeout(durationTimer);recordTimer=durationTimer=null;buttons();$("state").textContent="待機"}
-function addRecord(value,unit,stable,kind){
- if(!startTime)startTime=performance.now();const elapsed=(performance.now()-startTime)/1000;
- const rec={id:Date.now()+Math.random(),time:new Date(),elapsed,value,unit,stable,kind,photo:null};records.push(rec);render();return rec;
+function addRecord(value,unit,stable,kind,elapsedOverride=null,timeOverride=null){
+ if(!startTime)startTime=performance.now();
+ const elapsed=elapsedOverride!=null?elapsedOverride:(performance.now()-startTime)/1000;
+ const rec={id:Date.now()+Math.random(),time:timeOverride||new Date(),elapsed,value,unit,stable,kind,photo:null,memo:""};
+ records.push(rec);render();return rec;
 }
+function escapeHTML(t){return String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
 function render(){
  $("count").textContent=records.length;$("elapsed").textContent=(records.at(-1)?.elapsed||0).toFixed(1)+" s";
- $("tbody").innerHTML=records.slice().reverse().map(r=>`<tr><td>${r.time.toLocaleTimeString("ja-JP",{hour12:false})}</td><td>${r.elapsed.toFixed(1)}</td><td>${r.value.toFixed(2)}</td><td>${r.stable?"○":"—"}</td><td>${r.kind}</td></tr>`).join("");
+ $("tbody").innerHTML=records.slice().reverse().map(r=>`<tr><td>${r.time.toLocaleTimeString("ja-JP",{hour12:false})}</td><td>${r.elapsed.toFixed(1)}</td><td>${r.value.toFixed(2)}</td><td>${r.stable?"○":"—"}</td><td>${r.kind}</td><td><textarea class="record-memo" data-record-id="${r.id}" placeholder="メモを入力">${escapeHTML(r.memo||"")}</textarea></td></tr>`).join("");
  drawChart($("chart"));if($("chartOverlay").classList.contains("show"))drawChart($("fsChart"));
 }
 function drawChart(c){
@@ -169,13 +190,57 @@ function pointFromEvent(c,e){
 function showPointTooltip(e,pt){
  const tip=$("chartTooltip"),r=pt.r;
  const method=r.kind==="自動"?"自動記録":r.kind==="手動"?"手動記録":"写真";
- tip.innerHTML=`<b>${r.value.toFixed(2)} ${r.unit}</b><br>経過時間：${r.elapsed.toFixed(2)} s<br>時刻：${r.time.toLocaleTimeString("ja-JP",{hour12:false})}<br>記録：${method}${r.photo?`<img src="${r.photo}" alt="撮影画像">`:""}`;
+ tip.innerHTML=`<b>${r.value.toFixed(2)} ${r.unit}</b><br>経過時間：${r.elapsed.toFixed(2)} s<br>時刻：${r.time.toLocaleTimeString("ja-JP",{hour12:false})}<br>記録：${method}${r.photo?`<img src="${r.photo}" alt="撮影画像">`:""}<div class="tip-memo-label">メモ</div><textarea class="record-memo" data-record-id="${r.id}" placeholder="メモを入力">${escapeHTML(r.memo||"")}</textarea>`;
  tip.style.display="block";
  const wrap=tip.parentElement,wr=wrap.getBoundingClientRect();
  let left=e.clientX-wr.left+12,top=e.clientY-wr.top+12;
- if(left+270>wr.width)left=Math.max(5,left-285);if(top+220>wr.height)top=Math.max(5,top-225);
+ if(left+270>wr.width)left=Math.max(5,left-285);
+ if(top+220>wr.height)top=Math.max(5,top-225);
  tip.style.left=left+"px";tip.style.top=top+"px";
 }
+
+let tipDrag=null;
+$("chartTooltip").addEventListener("pointerdown",e=>{
+ const tip=$("chartTooltip"),wrap=tip.parentElement;
+ if(e.target.closest("textarea"))return;tip.setPointerCapture(e.pointerId);
+ const tr=tip.getBoundingClientRect();
+ tipDrag={id:e.pointerId,dx:e.clientX-tr.left,dy:e.clientY-tr.top,wrap};
+ tip.classList.add("dragging");e.preventDefault();e.stopPropagation();
+});
+$("chartTooltip").addEventListener("pointermove",e=>{
+ if(!tipDrag||e.pointerId!==tipDrag.id)return;
+ const tip=$("chartTooltip"),wr=tipDrag.wrap.getBoundingClientRect();
+ let left=e.clientX-wr.left-tipDrag.dx,top=e.clientY-wr.top-tipDrag.dy;
+ left=Math.max(4,Math.min(left,wr.width-tip.offsetWidth-4));
+ top=Math.max(4,Math.min(top,wr.height-tip.offsetHeight-4));
+ tip.style.left=left+"px";tip.style.top=top+"px";
+});
+$("chartTooltip").addEventListener("pointerup",e=>{
+ if(tipDrag&&e.pointerId===tipDrag.id){$("chartTooltip").classList.remove("dragging");tipDrag=null}
+});
+function saveGraphImage(){
+ const src=$("chart"),scale=2,w=src.width,h=src.height,top=105;
+ const c=document.createElement("canvas");c.width=w*scale;c.height=(h+top)*scale;
+ const ctx=c.getContext("2d");ctx.scale(scale,scale);ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h+top);
+ ctx.fillStyle="#172b3a";ctx.font="bold 24px sans-serif";ctx.fillText("質量 [g]",20,34);
+ ctx.font="14px sans-serif";ctx.fillStyle="#526171";
+ ctx.fillText(`測定回数 ${records.length}　 経過時間 ${(records.at(-1)?.elapsed||0).toFixed(1)} s`,20,60);
+ const dots=[["#1479df","自動記録"],["#21a45b","手動記録"],["#e64a4a","写真"]];
+ let x=20;
+ dots.forEach(([color,label])=>{
+  ctx.beginPath();ctx.arc(x+5,84,5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+  ctx.fillStyle="#526171";ctx.fillText(label,x+16,89);x+=90;
+ });
+ ctx.drawImage(src,0,top,w,h);
+ c.toBlob(blob=>{
+  const a=document.createElement("a"),d=new Date(),pad=n=>String(n).padStart(2,"0");
+  a.href=URL.createObjectURL(blob);
+  a.download=`KN_graph_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}.png`;
+  a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+ },"image/png");
+}
+$("saveGraphImage").onclick=saveGraphImage;
+
 $("chart").addEventListener("click",e=>{const pt=pointFromEvent($("chart"),e);if(pt)showPointTooltip(e,pt);else $("chartTooltip").style.display="none"});
 $("chart").addEventListener("mousemove",e=>{$("chart").style.cursor=pointFromEvent($("chart"),e)?"pointer":"default"});
 document.addEventListener("click",e=>{if(!e.target.closest(".chart-wrap"))$("chartTooltip").style.display="none"});
@@ -183,8 +248,8 @@ document.addEventListener("click",e=>{if(!e.target.closest(".chart-wrap"))$("cha
 function clearData(){records=[];photos=[];startTime=null;render();renderPhotos();msg("データを消去しました。")}
 function csv(){
  if(!records.length){msg("保存するデータがありません。");return}
- const rows=[["時刻","経過時間[s]","質量[g]","安定","記録方法"],...records.map(r=>[r.time.toLocaleTimeString("ja-JP",{hour12:false}),r.elapsed.toFixed(2),r.value.toFixed(2),r.stable?"安定":"変動中",r.kind])];
- const blob=new Blob(["\ufeff"+rows.map(r=>r.join(",")).join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="balance_data.csv";a.click();URL.revokeObjectURL(a.href);
+ const rows=[["時刻","経過時間[s]","質量[g]","安定","記録方法","メモ"],...records.map(r=>[r.time.toLocaleTimeString("ja-JP",{hour12:false}),r.elapsed.toFixed(2),r.value.toFixed(2),r.stable?"安定":"変動中",r.kind,r.memo||""])];
+ const blob=new Blob(["\ufeff"+rows.map(r=>r.map(v=>"\""+String(v).replace(/"/g,"\"\"")+"\"").join(",")).join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="balance_data.csv";a.click();URL.revokeObjectURL(a.href);
 }
 function openOverlay(id){$(id).classList.add("show");document.body.style.overflow="hidden";if(id==="chartOverlay")drawChart($("fsChart"));if(id==="cameraOverlay")listCameras()}
 function closeOverlay(){document.querySelectorAll(".overlay.show").forEach(x=>x.classList.remove("show"));document.body.style.overflow="";if($("fsPointTip"))$("fsPointTip").style.display="none"}
@@ -202,7 +267,7 @@ async function capture(){
  if(!cameraStream||!latest){msg("カメラと天びんの測定値を確認してください。");return}
  await request("写真確認",false);await sleep(220);const v=$("inlineVideo")?.videoWidth?$("inlineVideo"):$("video");if(!v.videoWidth)return;
  const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);const elapsed=startTime?(performance.now()-startTime)/1000:0;
- const p={image:c.toDataURL("image/jpeg",.88),value:latest.value,unit:latest.unit,stable:latest.stable,time:new Date(),elapsed};photos.push(p);const rec=addRecord(p.value,p.unit,p.stable,"写真");rec.photo=p.image;render();renderPhotos();
+ const p={image:c.toDataURL("image/jpeg",.88),value:latest.value,unit:latest.unit,stable:latest.stable,time:new Date(),elapsed};photos.push(p);const rec=addRecord(p.value,p.unit,p.stable,"写真",p.elapsed,p.time);rec.photo=p.image;render();renderPhotos();
 }
 function renderPhotos(){
  const p=photos.at(-1);if(p){$("latestPhoto").src=p.image;$("latestPhoto").style.display="block";$("latestMeta").innerHTML=`${p.time.toLocaleTimeString("ja-JP",{hour12:false})}<br><b>${p.value.toFixed(2)} ${p.unit}</b> ／ ${p.stable?"安定":"変動中"}`}else{$("latestPhoto").style.display="none";$("latestMeta").textContent="まだ写真はありません。"}
@@ -220,10 +285,21 @@ $("camStart").onclick=startCamera;$("camStop").onclick=stopCamera;$("capture").o
 
 $("fsChart").addEventListener("click",e=>{
  const pt=pointFromEvent($("fsChart"),e),tip=$("fsPointTip");if(!pt){tip.style.display="none";return}
- const r=pt.r;tip.innerHTML=`<b>${r.value.toFixed(2)} ${r.unit}</b><br>経過時間：${r.elapsed.toFixed(2)} s<br>時刻：${r.time.toLocaleTimeString("ja-JP",{hour12:false})}<br>記録：${r.kind}${r.photo?`<img src="${r.photo}" alt="撮影画像">`:""}`;
+ const r=pt.r;tip.innerHTML=`<b>${r.value.toFixed(2)} ${r.unit}</b><br>経過時間：${r.elapsed.toFixed(2)} s<br>時刻：${r.time.toLocaleTimeString("ja-JP",{hour12:false})}<br>記録：${r.kind}${r.photo?`<img src="${r.photo}" alt="撮影画像">`:""}<div class="tip-memo-label">メモ</div><textarea class="record-memo" data-record-id="${r.id}" placeholder="メモを入力">${escapeHTML(r.memo||"")}</textarea>`;
  tip.style.left=Math.min(e.clientX+12,window.innerWidth-315)+"px";tip.style.top=Math.min(e.clientY+12,window.innerHeight-230)+"px";tip.style.display="block";
 });
 $("fsChart").addEventListener("mousemove",e=>{$("fsChart").style.cursor=pointFromEvent($("fsChart"),e)?"pointer":"default"});
 
+document.addEventListener("input",e=>{if(!e.target.matches(".record-memo"))return;const r=records.find(x=>String(x.id)===e.target.dataset.recordId);if(r){r.memo=e.target.value;document.querySelectorAll(`.record-memo[data-record-id="${r.id}"]`).forEach(el=>{if(el!==e.target)el.value=r.memo})}});
+function downloadPhoto(r){
+ const im=new Image();im.onload=()=>{const w=im.naturalWidth,h=im.naturalHeight,scale=Math.max(1,w/900),pad=20*scale,lh=27*scale;
+ const lines=[`測定値: ${r.value.toFixed(2)} ${r.unit} / ${r.stable?"安定":"変動中"}`,`時刻: ${r.time.toLocaleString("ja-JP")}`,`経過時間: ${r.elapsed.toFixed(2)} s`,...((r.memo||"").split("\n").map((x,i)=>(i===0?"メモ: ":"      ")+x))];
+ const c=document.createElement("canvas");c.width=w;c.height=h+pad*2+lines.length*lh;const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(im,0,0,w,h);ctx.fillStyle="#172b3a";ctx.font=`${18*scale}px sans-serif`;lines.forEach((line,i)=>ctx.fillText(line,pad,h+pad+(i+0.8)*lh,w-pad*2));
+ c.toBlob(blob=>{if(!blob)return;const a=document.createElement("a");a.href=URL.createObjectURL(blob);const d=r.time,fmt=n=>String(n).padStart(2,"0");a.download=`KN_photo_${d.getFullYear()}${fmt(d.getMonth()+1)}${fmt(d.getDate())}_${fmt(d.getHours())}${fmt(d.getMinutes())}${fmt(d.getSeconds())}_${Math.round(r.elapsed*100)}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),10000)},"image/png")};im.src=r.photo;
+}
+function renderPhotoSaveList(){const list=$('photoSaveList'),rs=records.filter(r=>r.photo).reverse();list.innerHTML=rs.length?rs.map(r=>`<div class="photo-save-row"><input type="checkbox" class="photo-choice" value="${r.id}"><img src="${r.photo}" alt="記録写真"><div><b>${r.value.toFixed(2)} ${r.unit}</b><div>${r.time.toLocaleString("ja-JP")} / ${r.elapsed.toFixed(2)} s</div><div>${escapeHTML(r.memo||"")}</div></div><button class="photo-one" data-id="${r.id}">この写真を保存</button></div>`).join(""):"保存できる写真がありません。"}
+$('photoSaveOpen').onclick=()=>{$('photoSaveModal').classList.add('show');renderPhotoSaveList()};$('photoSaveClose').onclick=()=>$('photoSaveModal').classList.remove('show');$('photoSaveModal').addEventListener('click',e=>{if(e.target.id==='photoSaveModal')e.currentTarget.classList.remove('show');if(e.target.matches('.photo-one')){const r=records.find(x=>String(x.id)===e.target.dataset.id);if(r)downloadPhoto(r)}});
+$('photoSelectAll').onclick=()=>document.querySelectorAll('.photo-choice').forEach(x=>x.checked=true);$('photoSelectNone').onclick=()=>document.querySelectorAll('.photo-choice').forEach(x=>x.checked=false);
+$('photoSaveSelected').onclick=()=>{const ids=[...document.querySelectorAll('.photo-choice:checked')].map(x=>x.value);if(!ids.length){alert('写真を選択してください。');return}ids.forEach((id,i)=>{const r=records.find(x=>String(x.id)===id);if(r)setTimeout(()=>downloadPhoto(r),i*300)})};
 buttons();drawChart($("chart"));
 </script><div id="fsPointTip" class="fs-point-tip"></div></body></html>
