@@ -1,280 +1,145 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kenis 電子てんびん Webアプリ</title><style>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kenis 電子てんびん Webアプリ</title>
+<style>
 :root{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif;color:#172b3a;background:#f3f7f9;--teal:#00889a;--line:#d8e3e8;--blue:#0b79dc}
 *{box-sizing:border-box}body{margin:0;background:#f3f7f9}button,select{font:inherit}button{cursor:pointer}
-.topbar{min-height:76px;background:linear-gradient(90deg,#007487,#00889a);color:white;display:flex;align-items:center;padding:0 28px;gap:26px}
-.brand{font-size:31px;font-weight:750}.title{font-size:23px;font-weight:650}.top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
-.top-actions button{border:1px solid #ffffff88;background:#ffffff15;color:white;padding:9px 14px;border-radius:8px}
-.status-pill{padding:7px 11px;border-radius:999px;background:#ffffff22;font-size:13px}.status-pill.connected{background:#dff6e3;color:#176b2c}
-.content{display:grid;grid-template-columns:290px 1fr;gap:16px;padding:18px;max-width:1500px;margin:auto}.sidebar{display:flex;flex-direction:column;gap:14px}
-.panel{background:white;border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #1b38490d}.side-panel{padding:17px}.side-panel h2{font-size:17px;margin:0 0 14px}
-.current{text-align:center;padding:4px 0 6px}.value{font-size:57px;font-weight:750;font-variant-numeric:tabular-nums}.unit{font-size:24px;font-weight:600}
-.stability{display:inline-block;margin-top:12px;padding:6px 22px;border-radius:999px;background:#edf1f3;font-weight:650}.stability.stable{background:#dff5df;color:#177329}.stability.unstable{background:#fff0d8;color:#9b5a00}
-.field{display:grid;grid-template-columns:90px 1fr;align-items:center;gap:10px;margin:11px 0}.field label{font-size:14px;font-weight:600}
-select{width:100%;padding:9px 10px;border:1px solid #cbd8df;border-radius:8px;background:white}.control-stack{display:grid;gap:9px;margin-top:15px}
-.btn{border:0;border-radius:8px;padding:11px;font-weight:650;background:#e8eef2;color:#213746}.btn.primary{background:var(--blue);color:white}.btn.stop{background:#6f8291;color:white}.btn.outline{background:white;border:1px solid #cbd8df}.btn:disabled{opacity:.45}
-.sep{height:1px;background:#e2e8ec;margin:5px 0}.mini-status{font-size:12px;color:#526171;min-height:17px}
-.main{min-width:0}.main-panel{overflow:hidden}.tabs{display:flex;padding:0 16px;border-bottom:1px solid var(--line)}.tab{padding:15px 28px;font-weight:650;color:#536574;border-bottom:3px solid transparent}.tab.active{color:var(--blue);border-color:var(--blue)}
-.chart-wrap{padding:18px 20px 8px}.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.chart-head h2{font-size:17px;margin:0}
-.stats-inline{display:flex;gap:18px;font-size:13px;color:#526171}.stats-inline b{color:#223746}canvas{display:block;width:100%;height:310px;background:white}
-.data-section{border-top:1px solid var(--line);margin-top:8px}.data-title{padding:13px 18px;background:#f4f7f9;font-weight:700}.table-wrap{max-height:310px;overflow:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}th{position:sticky;top:0;background:#eef3f6}th,td{padding:9px 12px;border-bottom:1px solid #e5ebef;text-align:right}th:first-child,td:first-child{text-align:left}
-.fs-mini{width:100%;margin-top:14px;border:1px solid #cbd8df;background:#fff;color:#29404f;border-radius:8px;padding:9px;font-weight:650}.fs-mini.inline{width:auto;margin:0 0 0 12px;padding:7px 11px;font-size:12px}.chart-title-row{display:flex;align-items:center}.fs-overlay{position:fixed;inset:0;z-index:9999;background:#f3f7f9;display:none;flex-direction:column}.fs-overlay.show{display:flex}.fs-bar{height:68px;flex:0 0 68px;background:linear-gradient(90deg,#007487,#00889a);color:#fff;display:flex;align-items:center;padding:0 24px}.fs-bar-title{font-size:20px;font-weight:700}.fs-back{margin-left:auto;border:1px solid #ffffff88;background:#ffffff15;color:#fff;border-radius:8px;padding:9px 16px;font-weight:650}.fs-content{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:28px}.fs-value-box{text-align:center}.fs-label{font-size:28px;font-weight:700;margin-bottom:20px}.fs-number{font-size:min(20vw,210px);font-weight:780;line-height:1;font-variant-numeric:tabular-nums}.fs-unit{font-size:min(7vw,72px);font-weight:650;margin-left:14px}.fs-value-box .stability{font-size:28px;padding:10px 38px;margin-top:30px}.fs-chart-box{width:100%;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #d8e3e8;border-radius:12px;padding:20px}.fs-chart-label{font-size:20px;font-weight:700;margin-bottom:8px}#fsChart{width:100%;height:100%;min-height:0}
-.camera-modal{position:fixed;inset:0;z-index:10020;background:#f3f7f9;display:none;flex-direction:column}
-.camera-modal.show{display:flex}.cam-bar{height:68px;background:linear-gradient(90deg,#007487,#00889a);color:white;display:flex;align-items:center;padding:0 24px;font-size:20px;font-weight:700}
-.cam-close{margin-left:auto;border:1px solid #ffffff88;background:#ffffff15;color:white;border-radius:8px;padding:9px 16px}
-.cam-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.7fr);gap:18px;padding:18px}
-.cam-preview{background:#111;border-radius:12px;display:flex;align-items:center;justify-content:center;min-height:360px;overflow:hidden}
-#cameraVideo{width:100%;height:100%;object-fit:contain}.cam-side{display:flex;flex-direction:column;gap:12px;overflow:auto}
-.cam-card{background:white;border:1px solid #d8e3e8;border-radius:12px;padding:14px}.cam-card h3{margin:0 0 10px;font-size:16px}
-.cam-card select{width:100%;margin-bottom:9px}.cam-actions{display:grid;gap:8px}
-.cam-actions button{border:1px solid #cbd8df;background:white;border-radius:8px;padding:10px;font-weight:650}.cam-actions .capture{background:#0b79dc;color:white;border:0}
-.cam-actions button:disabled{opacity:.45}.latest-photo{width:100%;aspect-ratio:4/3;object-fit:contain;background:#eef2f4;border-radius:8px;display:none}
-.cam-meta{font-size:13px;color:#526171;line-height:1.6;margin-top:8px}.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-.photo-item{background:white;border:1px solid #d8e3e8;border-radius:9px;overflow:hidden}.photo-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}.photo-info{padding:8px;font-size:12px;line-height:1.5;color:#526171}.photo-info b{font-size:14px;color:#172b3a}
-@media(max-width:850px){.cam-body{grid-template-columns:1fr}.cam-preview{min-height:280px}}
-@media(max-width:850px){.content{grid-template-columns:1fr}.topbar{flex-wrap:wrap;padding:14px 18px}.top-actions{width:100%;margin-left:0}.stats-inline{flex-wrap:wrap}}
-</style></head><body>
-<header class="topbar"><div class="brand">Kenis</div><div class="title">電子てんびん Webアプリ</div><div class="top-actions"><span id="conn" class="status-pill">未接続</span><button id="connect">天びんに接続</button><button id="disconnect" disabled>切断</button><button id="csv">CSV保存</button></div></header>
-<div class="content"><aside class="sidebar">
-<section class="panel side-panel"><h2>現在の質量</h2><div class="current"><span id="weight" class="value">--.--</span><span id="unit" class="unit">g</span><br><span id="stability" class="stability">未測定</span></div><button id="valueFullscreen" class="fs-mini">⛶ 測定値を全画面</button></section>
-<section class="panel side-panel"><h2>測定設定</h2>
+.topbar{min-height:76px;background:linear-gradient(90deg,#007487,#00889a);color:#fff;display:flex;align-items:center;padding:0 28px;gap:24px}.brand{font-size:30px;font-weight:750}.title{font-size:22px;font-weight:650}.top-actions{margin-left:auto;display:flex;gap:9px;align-items:center}.top-actions button{border:1px solid #ffffff88;background:#ffffff15;color:#fff;padding:9px 13px;border-radius:8px}.status{padding:7px 11px;border-radius:999px;background:#ffffff22;font-size:13px}.status.on{background:#dff6e3;color:#176b2c}
+.content{display:grid;grid-template-columns:290px 1fr;gap:16px;padding:18px;max-width:1500px;margin:auto}.sidebar{display:flex;flex-direction:column;gap:14px}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #1b38490d}.side{padding:17px}.side h2{font-size:17px;margin:0 0 14px}.current{text-align:center}.value{font-size:57px;font-weight:750;font-variant-numeric:tabular-nums}.unit{font-size:24px;font-weight:600}.stability{display:inline-block;margin-top:12px;padding:6px 22px;border-radius:999px;background:#edf1f3;font-weight:650}.stable{background:#dff5df;color:#177329}.unstable{background:#fff0d8;color:#9b5a00}
+.field{display:grid;grid-template-columns:90px 1fr;align-items:center;gap:10px;margin:11px 0}.field label{font-size:14px;font-weight:600}select{width:100%;padding:9px;border:1px solid #cbd8df;border-radius:8px;background:#fff}.controls{display:grid;gap:9px;margin-top:15px}.btn{border:0;border-radius:8px;padding:11px;font-weight:650;background:#e8eef2;color:#213746}.btn.primary{background:var(--blue);color:#fff}.btn.stop{background:#6f8291;color:#fff}.btn.outline{background:#fff;border:1px solid #cbd8df}.btn:disabled{opacity:.45}.msg{font-size:12px;color:#526171;min-height:17px}
+.main{min-width:0}.tabs{display:flex;padding:0 16px;border-bottom:1px solid var(--line)}.tab{padding:15px 28px;font-weight:650;color:#536574;border-bottom:3px solid transparent;cursor:pointer}.tab.active{color:var(--blue);border-color:var(--blue)}.tab-panel{display:none}.tab-panel.active{display:block}.chart-wrap{padding:18px 20px}.chart-head{display:flex;align-items:center;justify-content:space-between}.chart-head h2{font-size:17px}.stats{display:flex;gap:16px;font-size:13px;color:#526171}.stats b{color:#223746}canvas{display:block;width:100%;height:330px;background:#fff}.data-title{padding:13px 18px;background:#f4f7f9;font-weight:700;border-top:1px solid var(--line)}.table-wrap{max-height:330px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th{position:sticky;top:0;background:#eef3f6}th,td{padding:9px 12px;border-bottom:1px solid #e5ebef;text-align:right}th:first-child,td:first-child{text-align:left}
+.fsbtn{border:1px solid #cbd8df;background:#fff;border-radius:8px;padding:7px 10px;font-weight:650}.wide{width:100%;margin-top:14px}.overlay{position:fixed;inset:0;z-index:9999;background:#f3f7f9;display:none;flex-direction:column}.overlay.show{display:flex}.ovbar{height:68px;background:linear-gradient(90deg,#007487,#00889a);color:#fff;display:flex;align-items:center;padding:0 24px;font-size:20px;font-weight:700}.back{margin-left:auto;border:1px solid #ffffff88;background:#ffffff15;color:#fff;border-radius:8px;padding:9px 16px}.ovcontent{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:28px}.big{text-align:center}.big .n{font-size:min(20vw,210px);font-weight:780}.big .u{font-size:min(7vw,72px);font-weight:650}.big .stability{font-size:28px;padding:10px 38px}.fschartbox{width:100%;height:100%;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column}#fsChart{height:100%;min-height:0}
+.camera-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.7fr);gap:18px;padding:18px}.preview{background:#111;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}#video{width:100%;height:100%;object-fit:contain}.camside{display:flex;flex-direction:column;gap:12px;overflow:auto}.camcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}.camcard h3{margin:0 0 10px}.camactions{display:grid;gap:8px}.camactions button{padding:10px;border:1px solid #cbd8df;background:#fff;border-radius:8px;font-weight:650}.camactions .capture{background:var(--blue);color:#fff;border:0}.camactions button:disabled{opacity:.45}#latestPhoto{width:100%;aspect-ratio:4/3;object-fit:contain;background:#eef2f4;border-radius:8px;display:none}.photogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.photo{border:1px solid var(--line);border-radius:8px;overflow:hidden}.photo img{width:100%;aspect-ratio:4/3;object-fit:cover}.photoinfo{padding:7px;font-size:12px}
+@media(max-width:850px){.content{grid-template-columns:1fr}.topbar{flex-wrap:wrap;padding:14px 18px}.top-actions{width:100%;margin-left:0}.camera-body{grid-template-columns:1fr}.stats{flex-wrap:wrap}}
+</style></head>
+<body>
+<header class="topbar"><div class="brand">Kenis</div><div class="title">電子てんびん Webアプリ</div><div class="top-actions"><span id="conn" class="status">未接続</span><button id="connect">天びんに接続</button><button id="disconnect" disabled>切断</button><button id="csv">CSV保存</button></div></header>
+<div class="content">
+<aside class="sidebar">
+<section class="panel side"><h2>現在の質量</h2><div class="current"><span id="weight" class="value">--.--</span><span id="unit" class="unit">g</span><br><span id="stability" class="stability">未測定</span></div><button id="valueFS" class="fsbtn wide">⛶ 測定値を全画面</button></section>
+<section class="panel side"><h2>測定設定</h2>
 <div class="field"><label>測定間隔</label><select id="interval"><option value="200">0.2秒</option><option value="500">0.5秒</option><option value="1000" selected>1秒</option><option value="2000">2秒</option><option value="5000">5秒</option><option value="10000">10秒</option></select></div>
 <div class="field"><label>測定時間</label><select id="duration"><option value="0">制限なし</option><option value="10">10秒</option><option value="30">30秒</option><option value="60" selected>1分</option><option value="300">5分</option><option value="600">10分</option><option value="1800">30分</option><option value="3600">60分</option></select></div>
-<div class="control-stack"><button id="start" class="btn primary" disabled>▶ 記録開始</button><button id="stop" class="btn stop" disabled>■ 記録停止</button><div class="sep"></div><button id="single" class="btn outline" disabled>● 現在値を記録</button><button id="openCamera" class="btn outline">📷 カメラ・写真</button><button id="clear" class="btn outline">データを消去</button></div><p id="message" class="mini-status"></p></section>
-</aside><main class="main"><section class="panel main-panel">
-<nav class="tabs"><div class="tab active">グラフ</div><div class="tab">測定データ</div></nav>
-<div class="chart-wrap"><div class="chart-head"><div class="chart-title-row"><h2>質量 [g]</h2><button id="chartFullscreen" class="fs-mini inline">⛶ グラフを全画面</button></div><div class="stats-inline"><span>測定回数 <b id="count">0</b></span><span>経過時間 <b id="elapsed">0.0 s</b></span><span>測定間隔 <b id="shownInterval">1.0 s</b></span><span>状態 <b id="state">待機</b></span></div></div><canvas id="chart" width="1100" height="310"></canvas></div>
-<div class="data-section"><div class="data-title">測定データ一覧</div><div class="table-wrap"><table><thead><tr><th>時刻</th><th>経過時間 [s]</th><th>質量 [g]</th><th>安定</th><th>記録方法</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
-</section></main></div><div id="valueOverlay" class="fs-overlay"><div class="fs-bar"><div class="fs-bar-title">現在の質量</div><button class="fs-back" data-closefs>戻る（Esc）</button></div><div class="fs-content"><div class="fs-value-box"><div class="fs-label">現在の質量</div><span id="fsWeight" class="fs-number">--.--</span><span id="fsUnit" class="fs-unit">g</span><br><span id="fsStability" class="stability">未測定</span></div></div></div><div id="chartOverlay" class="fs-overlay"><div class="fs-bar"><div class="fs-bar-title">リアルタイムグラフ</div><button class="fs-back" data-closefs>戻る（Esc）</button></div><div class="fs-content"><div class="fs-chart-box"><div class="fs-chart-label">質量 [g]</div><canvas id="fsChart" width="1400" height="700"></canvas></div></div></div>
-<div id="cameraModal" class="camera-modal">
- <div class="cam-bar">カメラ・写真 <button id="closeCamera" class="cam-close">戻る（Esc）</button></div>
- <div class="cam-body">
-  <div class="cam-preview"><video id="cameraVideo" autoplay playsinline muted></video></div>
-  <div class="cam-side">
-   <div class="cam-card"><h3>カメラ設定</h3><select id="cameraSelect"><option value="">カメラを選択</option></select>
-    <div class="cam-actions"><button id="cameraStart">カメラ開始</button><button id="cameraStop" disabled>カメラ停止</button><button id="capturePhoto" class="capture" disabled>📷 写真＋現在値を記録</button></div>
-   </div>
-   <div class="cam-card"><h3>最新の記録</h3><img id="latestPhoto" class="latest-photo"><div id="latestPhotoMeta" class="cam-meta">まだ写真はありません。</div></div>
-   <div class="cam-card"><h3>写真付き記録</h3><div id="photoGrid" class="photo-grid"></div></div>
-  </div>
- </div>
-</div>
-<script>
-let port=null, reader=null, readLoopRunning=false, buffer="";
-let measuring=false, timer=null, endTimer=null, startTime=null;
-let liveTimer=null, latestMeasurement=null;
-let pending=[];
-let records=[];
-let cameraStream=null, photoRecords=[], latestLiveMeasurement=null;
-const $=id=>document.getElementById(id);
-const encoder=new TextEncoder();
-const decoder=new TextDecoder();
+<div class="controls"><button id="start" class="btn primary" disabled>▶ 記録開始</button><button id="stop" class="btn stop" disabled>■ 記録停止</button><button id="single" class="btn outline" disabled>● 現在値を記録</button><button id="camera" class="btn outline">📷 カメラ・写真</button><button id="clear" class="btn outline">データを消去</button></div><p id="message" class="msg"></p></section>
+</aside>
+<main class="main panel">
+<nav class="tabs"><div class="tab active" data-tab="graph">グラフ</div><div class="tab" data-tab="data">測定データ</div></nav>
+<div id="graph" class="tab-panel active"><div class="chart-wrap"><div class="chart-head"><h2>質量 [g]</h2><button id="chartFS" class="fsbtn">⛶ グラフを全画面</button></div><div class="stats"><span>測定回数 <b id="count">0</b></span><span>経過時間 <b id="elapsed">0.0 s</b></span><span>状態 <b id="state">待機</b></span></div><canvas id="chart" width="1100" height="330"></canvas></div></div>
+<div id="data" class="tab-panel"><div class="data-title">測定データ一覧</div><div class="table-wrap"><table><thead><tr><th>時刻</th><th>経過時間 [s]</th><th>質量 [g]</th><th>安定</th><th>記録方法</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
+</main></div>
 
-function msg(s){$("message").textContent=s}
-function updateButtons(){
- const c=!!port;
- $("connect").disabled=c; $("disconnect").disabled=!c||measuring;
- $("start").disabled=!c||measuring; $("single").disabled=!c||measuring;
- $("stop").disabled=!measuring;
-}
+<div id="valueOverlay" class="overlay"><div class="ovbar">現在の質量<button class="back close">戻る（Esc）</button></div><div class="ovcontent"><div class="big"><span id="fsWeight" class="n">--.--</span><span id="fsUnit" class="u">g</span><br><span id="fsStability" class="stability">未測定</span></div></div></div>
+<div id="chartOverlay" class="overlay"><div class="ovbar">リアルタイムグラフ<button class="back close">戻る（Esc）</button></div><div class="ovcontent"><div class="fschartbox"><canvas id="fsChart" width="1400" height="700"></canvas></div></div></div>
+<div id="cameraOverlay" class="overlay"><div class="ovbar">カメラ・写真<button class="back close">戻る（Esc）</button></div><div class="camera-body"><div class="preview"><video id="video" autoplay playsinline muted></video></div><div class="camside"><div class="camcard"><h3>カメラ設定</h3><select id="cameraSelect"><option value="">カメラを選択</option></select><div class="camactions"><button id="camStart">カメラ開始</button><button id="camStop" disabled>カメラ停止</button><button id="capture" class="capture" disabled>📷 写真＋現在値を記録</button></div></div><div class="camcard"><h3>最新の記録</h3><img id="latestPhoto"><div id="latestMeta" class="msg">まだ写真はありません。</div></div><div class="camcard"><h3>写真付き記録</h3><div id="photoGrid" class="photogrid"></div></div></div></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let port=null,reader=null,writer=null,readLoopActive=false,buffer="";
+let liveTimer=null,recordTimer=null,durationTimer=null,recording=false,startTime=null;
+let records=[],pending=[],latest=null,cameraStream=null,photos=[];
+
+function msg(t){$("message").textContent=t}
+function buttons(){const on=!!port;$("connect").disabled=on;$("disconnect").disabled=!on;$("start").disabled=!on||recording;$("stop").disabled=!recording;$("single").disabled=!on}
 async function connect(){
- if(!("serial" in navigator)){
-  msg("このブラウザではWeb Serialを利用できません。ChromeまたはEdgeで開いてください。");
-  alert("Web Serialを利用できません。Windows/ChromebookのChromeまたはEdgeで、HTTPSのページを開いてください。");
-  return;
- }
- if(!("serial" in navigator)){msg("このブラウザはWeb Serial APIに対応していません。対応ブラウザで開いてください。");return}
+ if(!("serial" in navigator)){alert("Web Serialを利用できません。Windows/ChromebookのChromeまたはEdgeで開いてください。");return}
  try{
-   port=await navigator.serial.requestPort();
-   await port.open({baudRate:2400,dataBits:7,stopBits:2,parity:"none",flowControl:"none"});
-   $("conn").textContent="接続済み"; $("conn").className="status-pill connected";
-   msg("接続しました。");
-   updateButtons(); readLoop(); startLiveDisplay();
- }catch(e){port=null;msg("接続できませんでした: "+e.message);updateButtons()}
+  port=await navigator.serial.requestPort();
+  await port.open({baudRate:2400,dataBits:7,stopBits:2,parity:"none",flowControl:"none"});
+  writer=port.writable.getWriter();reader=port.readable.getReader();readLoopActive=true;readLoop();
+  $("conn").textContent="接続済み";$("conn").className="status on";buttons();msg("天びんに接続しました。");
+  startLive();
+ }catch(e){msg("接続できませんでした: "+e.message);port=null;buttons()}
 }
 async function disconnect(){
- stopMeasurement();
- stopLiveDisplay();
- try{
-   if(reader){await reader.cancel()}
-   while(readLoopRunning) await sleep(10);
-   if(port) await port.close();
- }catch(e){msg("切断時エラー: "+e.message)}
- port=null;$("conn").textContent="未接続";$("conn").className="status-pill";updateButtons();
+ stopRecording();stopLive();readLoopActive=false;
+ try{if(reader){await reader.cancel();reader.releaseLock();reader=null}}catch(e){}
+ try{if(writer){writer.releaseLock();writer=null}}catch(e){}
+ try{if(port){await port.close()}}catch(e){}
+ port=null;$("conn").textContent="未接続";$("conn").className="status";buttons();msg("切断しました。");
 }
 async function readLoop(){
- readLoopRunning=true;
  try{
-   while(port && port.readable){
-     reader=port.readable.getReader();
-     try{
-       while(true){
-         const {value,done}=await reader.read();
-         if(done) break;
-         buffer+=decoder.decode(value,{stream:true});
-         processBuffer();
-       }
-     }catch(e){if(port) msg("受信エラー: "+e.message)}
-     finally{reader.releaseLock();reader=null}
-   }
- }finally{readLoopRunning=false}
-}
-function processBuffer(){
- const parts=buffer.split(/\r\n|\n|\r/);
- buffer=parts.pop();
- for(const raw of parts){
-   const line=raw.trim();
-   if(line) handleLine(line);
- }
+  while(readLoopActive&&reader){
+   const {value,done}=await reader.read();if(done)break;
+   buffer+=new TextDecoder().decode(value);
+   let i;
+   while((i=buffer.indexOf("\r"))>=0){const line=buffer.slice(0,i).trim();buffer=buffer.slice(i+1);if(line)handleLine(line)}
+  }
+ }catch(e){if(readLoopActive)msg("受信エラー: "+e.message)}
 }
 function handleLine(line){
- const m=line.match(/([+-]?\d+(?:\.\d+)?)\s*([a-zA-Z]+)?\s*(\?)?/);
- if(!m) return;
- const value=Number(m[1]), unit=m[2]||"g", stable=!m[3];
- const req=pending.shift()||{mode:"表示",record:false};
- latestMeasurement={value,unit,stable,time:new Date()};
- $("weight").textContent=value.toFixed(2); $("unit").textContent=unit;
- $("stability").textContent=stable?"安定":"変動中";$("fsStability").textContent=stable?"安定":"変動中";
- $("stability").className="stability "+(stable?"stable":"unstable");$("fsStability").className="stability "+(stable?"stable":"unstable");
- if(req.record) addRecord(value,unit,stable,req.mode);
+ const m=line.match(/([-+]?\d+(?:\.\d+)?)\s*([a-zA-Z]+)?\s*(\?)?/);if(!m)return;
+ const value=Number(m[1]),unit=m[2]||"g",stable=!line.includes("?");
+ latest={value,unit,stable,time:new Date()};showCurrent();
+ const req=pending.shift();if(req?.record)addRecord(value,unit,stable,req.kind);
 }
-async function requestMeasurement(mode,record=false){
- if(!port?.writable || pending.length>0) return false;
- const writer=port.writable.getWriter();
- try{ pending.push({mode,record,at:performance.now()}); await writer.write(encoder.encode("IP\r")); return true; }
- finally{writer.releaseLock()}
+function showCurrent(){
+ if(!latest)return;
+ $("weight").textContent=$("fsWeight").textContent=latest.value.toFixed(2);
+ $("unit").textContent=$("fsUnit").textContent=latest.unit;
+ const t=latest.stable?"安定":"変動中",c="stability "+(latest.stable?"stable":"unstable");
+ $("stability").textContent=$("fsStability").textContent=t;$("stability").className=$("fsStability").className=c;
 }
-function addRecord(value,unit,stable,mode){
- const now=new Date();
- const elapsed=startTime?(performance.now()-startTime)/1000:0;
- records.push({time:now.toLocaleTimeString("ja-JP",{hour12:false}),elapsed,value,unit,stable,mode});
- $("count").textContent=records.length; $("elapsed").textContent=elapsed.toFixed(1)+" s";
- renderTable();drawChart();
+async function request(kind="ライブ",record=false){
+ if(!writer||pending.length)return;
+ try{pending.push({kind,record});await writer.write(new TextEncoder().encode("IP\r"));setTimeout(()=>{if(pending.length)pending.shift()},900)}catch(e){pending=[];msg("送信エラー: "+e.message)}
 }
-function startLiveDisplay(){
- stopLiveDisplay();
- requestMeasurement("表示",false);
- liveTimer=setInterval(()=>{ if(!measuring && pending.length===0) requestMeasurement("表示",false); },500);
+function startLive(){stopLive();liveTimer=setInterval(()=>{if(!recording)request("ライブ",false)},500);request("ライブ",false)}
+function stopLive(){if(liveTimer)clearInterval(liveTimer);liveTimer=null}
+function startRecording(){
+ if(!port||recording)return;recording=true;if(!startTime)startTime=performance.now();buttons();$("state").textContent="記録中";
+ const ms=Number($("interval").value);recordTimer=setInterval(()=>request("自動",true),ms);request("自動",true);
+ const sec=Number($("duration").value);if(sec>0)durationTimer=setTimeout(stopRecording,sec*1000);
 }
-function stopLiveDisplay(){ if(liveTimer){clearInterval(liveTimer);liveTimer=null} }
-async function startMeasurement(){
- if(measuring) return;
- measuring=true; startTime=performance.now(); $("state").textContent="記録中"; updateButtons();
- const interval=Number($("interval").value), duration=Number($("duration").value);
- $("shownInterval").textContent=(interval/1000).toFixed(interval<1000?1:0)+" s";
- const tick=async()=>{
-   if(!measuring)return;
-   // 応答の滞留を避ける。前要求が未応答なら今回は送らない。
-   if(pending.length===0) await requestMeasurement("連続",true);
- };
- await tick();
- timer=setInterval(tick,interval);
- if(duration>0) endTimer=setTimeout(stopMeasurement,duration*1000);
+function stopRecording(){recording=false;if(recordTimer)clearInterval(recordTimer);if(durationTimer)clearTimeout(durationTimer);recordTimer=durationTimer=null;buttons();$("state").textContent="待機"}
+function addRecord(value,unit,stable,kind){
+ if(!startTime)startTime=performance.now();const elapsed=(performance.now()-startTime)/1000;
+ records.push({time:new Date(),elapsed,value,unit,stable,kind});render();
 }
-function stopMeasurement(){
- measuring=false;
- if(timer){clearInterval(timer);timer=null}
- if(endTimer){clearTimeout(endTimer);endTimer=null}
- $("state").textContent="待機";updateButtons();
+function render(){
+ $("count").textContent=records.length;$("elapsed").textContent=(records.at(-1)?.elapsed||0).toFixed(1)+" s";
+ $("tbody").innerHTML=records.slice().reverse().map(r=>`<tr><td>${r.time.toLocaleTimeString("ja-JP",{hour12:false})}</td><td>${r.elapsed.toFixed(1)}</td><td>${r.value.toFixed(2)}</td><td>${r.stable?"○":"—"}</td><td>${r.kind}</td></tr>`).join("");
+ drawChart($("chart"));if($("chartOverlay").classList.contains("show"))drawChart($("fsChart"));
 }
-async function singleMeasurement(){
- if(pending.length){msg("前の測定値を受信待ちです。もう一度押してください。");return}
- if(!startTime) startTime=performance.now();
- $("state").textContent="任意記録";
- await requestMeasurement("任意",true);
- setTimeout(()=>{if(!measuring)$("state").textContent="待機"},300);
+function drawChart(c){
+ const ctx=c.getContext("2d"),w=c.width,h=c.height,p=58;ctx.clearRect(0,0,w,h);ctx.strokeStyle="#d9e2e8";ctx.beginPath();ctx.moveTo(p,15);ctx.lineTo(p,h-p);ctx.lineTo(w-15,h-p);ctx.stroke();if(records.length<2)return;
+ const d=records.slice(-500),xs=d.map(x=>x.elapsed),ys=d.map(x=>x.value);let xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys);if(xmax===xmin)xmax++;if(ymax===ymin){ymin-=1;ymax+=1}const q=(ymax-ymin)*.08;ymin-=q;ymax+=q;
+ ctx.fillStyle="#526171";ctx.font="14px sans-serif";ctx.fillText(ymax.toFixed(2)+" g",4,25);ctx.fillText(ymin.toFixed(2)+" g",4,h-p);ctx.fillText(xmin.toFixed(1)+" s",p,h-20);ctx.fillText(xmax.toFixed(1)+" s",w-75,h-20);
+ ctx.strokeStyle="#087f9c";ctx.lineWidth=3;ctx.beginPath();d.forEach((r,i)=>{const x=p+(r.elapsed-xmin)/(xmax-xmin)*(w-p-20),y=15+(ymax-r.value)/(ymax-ymin)*(h-p-15);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
 }
-function clearData(){
- records=[];pending=[];startTime=null;
- $("count").textContent="0";$("elapsed").textContent="0.0 s";
- if(!port){$("weight").textContent="--.--";$("stability").textContent="未測定";$("stability").className="stability"}
- renderTable();drawChart();
-}
-function renderTable(){
- const rows=records.slice(-200).reverse().map(r=>`<tr><td>${r.time}</td><td>${r.elapsed.toFixed(3)}</td><td>${r.value.toFixed(2)}</td><td>${r.unit}</td><td>${r.stable?"○":"?"}</td><td>${r.mode}</td></tr>`).join("");
- $("tbody").innerHTML=rows;
-}
-function drawChart(){
- const c=$("chart"),ctx=c.getContext("2d"),w=c.width,h=c.height,p=45;
- ctx.clearRect(0,0,w,h);
- ctx.strokeStyle="#d0d5dd";ctx.lineWidth=1;
- ctx.beginPath();ctx.moveTo(p,10);ctx.lineTo(p,h-p);ctx.lineTo(w-10,h-p);ctx.stroke();
- if(records.length<2)return;
- const data=records.slice(-300), xs=data.map(r=>r.elapsed), ys=data.map(r=>r.value);
- let xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys);
- if(xmax===xmin)xmax=xmin+1;if(ymax===ymin){ymin-=1;ymax+=1}
- const pad=(ymax-ymin)*.08;ymin-=pad;ymax+=pad;
- ctx.fillStyle="#667085";ctx.font="12px sans-serif";
- ctx.fillText(ymax.toFixed(2)+" g",3,18);ctx.fillText(ymin.toFixed(2)+" g",3,h-p);
- ctx.fillText(xmin.toFixed(1)+" s",p,h-10);ctx.fillText(xmax.toFixed(1)+" s",w-55,h-10);
- ctx.strokeStyle="#087f9c";ctx.lineWidth=3;ctx.beginPath();
- data.forEach((r,i)=>{
-   const x=p+(r.elapsed-xmin)/(xmax-xmin)*(w-p-15);
-   const y=10+(ymax-r.value)/(ymax-ymin)*(h-p-10);
-   i?ctx.lineTo(x,y):ctx.moveTo(x,y);
- });ctx.stroke();
- if(document.getElementById("chartOverlay")?.classList.contains("show") && typeof drawFullscreenChart==="function") drawFullscreenChart();
-}
-function saveCSV(){
+function clearData(){records=[];photos=[];startTime=null;render();renderPhotos();msg("データを消去しました。")}
+function csv(){
  if(!records.length){msg("保存するデータがありません。");return}
- const rows=[["時刻","経過時間(s)","質量","単位","安定","モード"],
- ...records.map(r=>[r.time,r.elapsed.toFixed(3),r.value.toFixed(2),r.unit,r.stable?"stable":"unstable",r.mode])];
- const csv="\uFEFF"+rows.map(a=>a.join(",")).join("\r\n");
- const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
- const a=document.createElement("a");a.href=URL.createObjectURL(blob);
- a.download="KN-200_"+new Date().toISOString().replace(/[:.]/g,"-")+".csv";a.click();URL.revokeObjectURL(a.href);
+ const rows=[["時刻","経過時間[s]","質量[g]","安定","記録方法"],...records.map(r=>[r.time.toLocaleTimeString("ja-JP",{hour12:false}),r.elapsed.toFixed(2),r.value.toFixed(2),r.stable?"安定":"変動中",r.kind])];
+ const blob=new Blob(["\ufeff"+rows.map(r=>r.join(",")).join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="balance_data.csv";a.click();URL.revokeObjectURL(a.href);
 }
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-
+function openOverlay(id){$(id).classList.add("show");document.body.style.overflow="hidden";if(id==="chartOverlay")drawChart($("fsChart"));if(id==="cameraOverlay")listCameras()}
+function closeOverlay(){document.querySelectorAll(".overlay.show").forEach(x=>x.classList.remove("show"));document.body.style.overflow=""}
 async function listCameras(){
- if(!navigator.mediaDevices?.enumerateDevices)return;
- const ds=await navigator.mediaDevices.enumerateDevices(), cams=ds.filter(d=>d.kind==="videoinput"), s=$("cameraSelect"), old=s.value;
- s.innerHTML='<option value="">カメラを選択</option>';
- cams.forEach((c,i)=>{const o=document.createElement("option");o.value=c.deviceId;o.textContent=c.label||("カメラ "+(i+1));s.appendChild(o)});
- if([...s.options].some(o=>o.value===old))s.value=old;
+ if(!navigator.mediaDevices?.enumerateDevices){msg("カメラ機能を利用できません。");return}
+ const ds=await navigator.mediaDevices.enumerateDevices(),cams=ds.filter(d=>d.kind==="videoinput"),s=$("cameraSelect"),old=s.value;s.innerHTML='<option value="">カメラを選択</option>';
+ cams.forEach((d,i)=>{const o=document.createElement("option");o.value=d.deviceId;o.textContent=d.label||`カメラ ${i+1}`;s.appendChild(o)});if([...s.options].some(o=>o.value===old))s.value=old;
 }
 async function startCamera(){
- try{
-  stopCamera();
-  const id=$("cameraSelect").value;
-  cameraStream=await navigator.mediaDevices.getUserMedia({video:id?{deviceId:{exact:id}}:true,audio:false});
-  $("cameraVideo").srcObject=cameraStream;$("cameraStart").disabled=true;$("cameraStop").disabled=false;$("capturePhoto").disabled=false;
-  await listCameras();const d=cameraStream.getVideoTracks()[0]?.getSettings?.().deviceId;if(d)$("cameraSelect").value=d;
- }catch(e){msg("カメラを開始できませんでした: "+e.message)}
+ try{stopCamera();const id=$("cameraSelect").value;cameraStream=await navigator.mediaDevices.getUserMedia({video:id?{deviceId:{exact:id}}:true,audio:false});$("video").srcObject=cameraStream;$("camStart").disabled=true;$("camStop").disabled=false;$("capture").disabled=false;await listCameras();const d=cameraStream.getVideoTracks()[0].getSettings().deviceId;if(d)$("cameraSelect").value=d}catch(e){msg("カメラを開始できませんでした: "+e.message)}
 }
-function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}$("cameraVideo").srcObject=null;$("cameraStart").disabled=false;$("cameraStop").disabled=true;$("capturePhoto").disabled=true}
-async function capturePhotoWithValue(){
- if(!cameraStream||!latestLiveMeasurement){msg("カメラと天びんの測定値を確認してください。");return}
- if(port&&pending.length===0){await requestMeasurement("写真",false);await sleep(220)}
- const v=$("cameraVideo");if(!v.videoWidth)return;
- const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);
- const m=latestLiveMeasurement, elapsed=startTime?(performance.now()-startTime)/1000:0;
- const p={id:Date.now(),image:c.toDataURL("image/jpeg",.88),time:new Date().toLocaleTimeString("ja-JP",{hour12:false}),elapsed,value:m.value,unit:m.unit,stable:m.stable};
- photoRecords.push(p);addRecord(p.value,p.unit,p.stable,"写真");renderPhotoRecords();
+function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}$("video").srcObject=null;$("camStart").disabled=false;$("camStop").disabled=true;$("capture").disabled=true}
+async function capture(){
+ if(!cameraStream||!latest){msg("カメラと天びんの測定値を確認してください。");return}
+ await request("写真確認",false);await sleep(220);const v=$("video");if(!v.videoWidth)return;
+ const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);const elapsed=startTime?(performance.now()-startTime)/1000:0;
+ const p={image:c.toDataURL("image/jpeg",.88),value:latest.value,unit:latest.unit,stable:latest.stable,time:new Date(),elapsed};photos.push(p);addRecord(p.value,p.unit,p.stable,"写真");renderPhotos();
 }
-function renderPhotoRecords(){
- const p=photoRecords.at(-1);
- if(p){$("latestPhoto").src=p.image;$("latestPhoto").style.display="block";$("latestPhotoMeta").innerHTML=`${p.time}<br><b>${p.value.toFixed(2)} ${p.unit}</b> ／ ${p.stable?"安定":"変動中"} ／ ${p.elapsed.toFixed(1)} s`}
- else{$("latestPhoto").style.display="none";$("latestPhotoMeta").textContent="まだ写真はありません。"}
- $("photoGrid").innerHTML=photoRecords.slice().reverse().map(x=>`<div class="photo-item"><img src="${x.image}"><div class="photo-info"><b>${x.value.toFixed(2)} ${x.unit}</b><br>${x.time}<br>${x.elapsed.toFixed(1)} s ／ ${x.stable?"安定":"変動中"}</div></div>`).join("");
+function renderPhotos(){
+ const p=photos.at(-1);if(p){$("latestPhoto").src=p.image;$("latestPhoto").style.display="block";$("latestMeta").innerHTML=`${p.time.toLocaleTimeString("ja-JP",{hour12:false})}<br><b>${p.value.toFixed(2)} ${p.unit}</b> ／ ${p.stable?"安定":"変動中"}`}else{$("latestPhoto").style.display="none";$("latestMeta").textContent="まだ写真はありません。"}
+ $("photoGrid").innerHTML=photos.slice().reverse().map(x=>`<div class="photo"><img src="${x.image}"><div class="photoinfo"><b>${x.value.toFixed(2)} ${x.unit}</b><br>${x.time.toLocaleTimeString("ja-JP",{hour12:false})}</div></div>`).join("");
 }
-$("openCamera").onclick=async()=>{$("cameraModal").classList.add("show");document.body.style.overflow="hidden";await listCameras()};
-$("closeCamera").onclick=()=>{$("cameraModal").classList.remove("show");document.body.style.overflow=""};
-$("cameraStart").onclick=startCamera;$("cameraStop").onclick=stopCamera;$("capturePhoto").onclick=capturePhotoWithValue;
-$("cameraSelect").onchange=async()=>{if(cameraStream)await startCamera()};
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("cameraModal").classList.contains("show")){$("cameraModal").classList.remove("show");document.body.style.overflow=""}});
-\n$("connect").onclick=connect;$("disconnect").onclick=disconnect;
-$("start").onclick=startMeasurement;$("stop").onclick=stopMeasurement;
-$("single").onclick=singleMeasurement;$("clear").onclick=clearData;$("csv").onclick=saveCSV;
-$("interval").onchange=()=>{$("shownInterval").textContent=(Number($("interval").value)/1000)+" s"};
-updateButtons();drawChart();
-function drawFullscreenChart(){
- const c=$("fsChart"),ctx=c.getContext("2d"),w=c.width,h=c.height,p=70;ctx.clearRect(0,0,w,h);ctx.strokeStyle="#d9e2e8";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p,20);ctx.lineTo(p,h-p);ctx.lineTo(w-20,h-p);ctx.stroke();if(records.length<2)return;
- const data=records.slice(-500),xs=data.map(r=>r.elapsed),ys=data.map(r=>r.value);let xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys);if(xmax===xmin)xmax=xmin+1;if(ymax===ymin){ymin-=1;ymax+=1}const pad=(ymax-ymin)*.08;ymin-=pad;ymax+=pad;ctx.fillStyle="#526171";ctx.font="18px sans-serif";ctx.fillText(ymax.toFixed(2)+" g",5,30);ctx.fillText(ymin.toFixed(2)+" g",5,h-p);ctx.fillText(xmin.toFixed(1)+" s",p,h-25);ctx.fillText(xmax.toFixed(1)+" s",w-90,h-25);ctx.strokeStyle="#087f9c";ctx.lineWidth=4;ctx.beginPath();data.forEach((r,i)=>{const x=p+(r.elapsed-xmin)/(xmax-xmin)*(w-p-25),y=20+(ymax-r.value)/(ymax-ymin)*(h-p-20);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
-}
-function openFS(id){$(id).classList.add("show");document.body.style.overflow="hidden";if(id==="chartOverlay")drawFullscreenChart()}
-function closeFS(){document.querySelectorAll(".fs-overlay.show").forEach(x=>x.classList.remove("show"));document.body.style.overflow=""}
-$("valueFullscreen").onclick=()=>openFS("valueOverlay");$("chartFullscreen").onclick=()=>openFS("chartOverlay");document.querySelectorAll("[data-closefs]").forEach(b=>b.onclick=closeFS);document.addEventListener("keydown",e=>{if(e.key==="Escape")closeFS()});
-
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab-panel").forEach(x=>x.classList.remove("active"));t.classList.add("active");$(t.dataset.tab).classList.add("active")});
+$("connect").onclick=connect;$("disconnect").onclick=disconnect;$("start").onclick=startRecording;$("stop").onclick=stopRecording;$("single").onclick=()=>request("手動",true);$("clear").onclick=clearData;$("csv").onclick=csv;
+$("valueFS").onclick=()=>openOverlay("valueOverlay");$("chartFS").onclick=()=>openOverlay("chartOverlay");$("camera").onclick=()=>openOverlay("cameraOverlay");document.querySelectorAll(".close").forEach(b=>b.onclick=closeOverlay);document.addEventListener("keydown",e=>{if(e.key==="Escape")closeOverlay()});
+$("camStart").onclick=startCamera;$("camStop").onclick=stopCamera;$("capture").onclick=capture;$("cameraSelect").onchange=()=>{if(cameraStream)startCamera()};
+buttons();drawChart($("chart"));
 </script></body></html>
