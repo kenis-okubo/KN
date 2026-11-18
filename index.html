@@ -20,7 +20,12 @@
 .inline-cam-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.inline-cam-actions .primary{grid-column:1/-1;padding:9px}
 .inline-photos{display:flex;gap:6px;overflow-x:auto;margin-top:8px}.inline-photo{min-width:72px;width:72px}.inline-photo img{width:72px;height:54px;object-fit:cover;border-radius:6px}.inline-photo div{font-size:10px;line-height:1.3}
 .graph-settings{border-top:1px solid #d8e3e8;padding:14px 20px 16px;background:#fbfcfd}.graph-settings h2{font-size:16px;margin:0 0 10px}.settings-row{display:grid;grid-template-columns:1.2fr 1.2fr 1fr 1fr 1fr 1fr;gap:8px;align-items:end}.setting-field label{display:block;font-size:12px;font-weight:650;margin-bottom:4px}.setting-field select{padding:8px}.graph-settings .btn{padding:9px 7px;font-size:13px}
-@media(max-width:850px){.content{grid-template-columns:1fr}.topbar{flex-wrap:wrap;padding:14px 18px}.top-actions{width:100%;margin-left:0}.camera-body{grid-template-columns:1fr}.stats{flex-wrap:wrap}}
+
+.chart-wrap{position:relative}
+.chart-tooltip{position:absolute;z-index:30;display:none;min-width:190px;max-width:270px;background:#fff;border:1px solid #cbd8df;border-radius:9px;box-shadow:0 5px 18px #0002;padding:10px 12px;font-size:12px;line-height:1.55;pointer-events:none}
+.chart-tooltip b{font-size:15px}.chart-tooltip img{display:block;width:100%;max-height:150px;object-fit:contain;background:#eef2f4;border-radius:6px;margin-top:7px}
+.chart-legend{display:flex;gap:14px;align-items:center;font-size:12px;color:#526171;margin:5px 0 0}.legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.lg-auto{background:#1479df}.lg-manual{background:#21a45b}.lg-photo{background:#e64a4a}
+.fs-point-tip{position:fixed;z-index:10050;display:none;background:#fff;border:1px solid #cbd8df;border-radius:9px;box-shadow:0 5px 18px #0003;padding:10px 12px;font-size:13px;line-height:1.55;max-width:300px}.fs-point-tip img{display:block;width:100%;max-height:170px;object-fit:contain;margin-top:7px;border-radius:6px}@media(max-width:850px){.content{grid-template-columns:1fr}.topbar{flex-wrap:wrap;padding:14px 18px}.top-actions{width:100%;margin-left:0}.camera-body{grid-template-columns:1fr}.stats{flex-wrap:wrap}}
 </style></head>
 <body>
 <header class="topbar"><div class="brand">Kenis</div><div class="title">電子てんびん Webアプリ</div><div class="top-actions"><span id="conn" class="status">未接続</span><button id="connect">天びんに接続</button><button id="disconnect" disabled>切断</button><button id="csv">CSV保存</button></div></header>
@@ -46,7 +51,8 @@
 </aside>
 <main class="main panel">
 <nav class="tabs"><div class="tab active" data-tab="graph">グラフ</div><div class="tab" data-tab="data">測定データ</div></nav>
-<div id="graph" class="tab-panel active"><div class="chart-wrap"><div class="chart-head"><h2>質量 [g]</h2><button id="chartFS" class="fsbtn">⛶ グラフを全画面</button></div><div class="stats"><span>測定回数 <b id="count">0</b></span><span>経過時間 <b id="elapsed">0.0 s</b></span><span>状態 <b id="state">待機</b></span></div><canvas id="chart" width="1100" height="330"></canvas></div>
+<div id="graph" class="tab-panel active"><div class="chart-wrap"><div class="chart-head"><h2>質量 [g]</h2><button id="chartFS" class="fsbtn">⛶ グラフを全画面</button></div><div class="stats"><span>測定回数 <b id="count">0</b></span><span>経過時間 <b id="elapsed">0.0 s</b></span><span>状態 <b id="state">待機</b></span></div><div class="chart-legend"><span><i class="legend-dot lg-auto"></i>自動記録</span><span><i class="legend-dot lg-manual"></i>手動記録</span><span><i class="legend-dot lg-photo"></i>写真</span></div>
+<canvas id="chart" width="1100" height="330"></canvas><div id="chartTooltip" class="chart-tooltip"></div></div>
 <div class="graph-settings">
   <h2>測定設定</h2>
   <div class="settings-row">
@@ -130,7 +136,7 @@ function startRecording(){
 function stopRecording(){recording=false;if(recordTimer)clearInterval(recordTimer);if(durationTimer)clearTimeout(durationTimer);recordTimer=durationTimer=null;buttons();$("state").textContent="待機"}
 function addRecord(value,unit,stable,kind){
  if(!startTime)startTime=performance.now();const elapsed=(performance.now()-startTime)/1000;
- records.push({time:new Date(),elapsed,value,unit,stable,kind});render();
+ const rec={id:Date.now()+Math.random(),time:new Date(),elapsed,value,unit,stable,kind,photo:null};records.push(rec);render();return rec;
 }
 function render(){
  $("count").textContent=records.length;$("elapsed").textContent=(records.at(-1)?.elapsed||0).toFixed(1)+" s";
@@ -138,11 +144,42 @@ function render(){
  drawChart($("chart"));if($("chartOverlay").classList.contains("show"))drawChart($("fsChart"));
 }
 function drawChart(c){
- const ctx=c.getContext("2d"),w=c.width,h=c.height,p=58;ctx.clearRect(0,0,w,h);ctx.strokeStyle="#d9e2e8";ctx.beginPath();ctx.moveTo(p,15);ctx.lineTo(p,h-p);ctx.lineTo(w-15,h-p);ctx.stroke();if(records.length<2)return;
- const d=records.slice(-500),xs=d.map(x=>x.elapsed),ys=d.map(x=>x.value);let xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys);if(xmax===xmin)xmax++;if(ymax===ymin){ymin-=1;ymax+=1}const q=(ymax-ymin)*.08;ymin-=q;ymax+=q;
+ const ctx=c.getContext("2d"),w=c.width,h=c.height,p=58;
+ ctx.clearRect(0,0,w,h);ctx.strokeStyle="#d9e2e8";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p,15);ctx.lineTo(p,h-p);ctx.lineTo(w-15,h-p);ctx.stroke();
+ c._points=[];
+ if(!records.length)return;
+ const d=records.slice(-500),xs=d.map(x=>x.elapsed),ys=d.map(x=>x.value);
+ let xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys);
+ if(xmax===xmin)xmax=xmin+1;if(ymax===ymin){ymin-=1;ymax+=1}const q=(ymax-ymin)*.08;ymin-=q;ymax+=q;
  ctx.fillStyle="#526171";ctx.font="14px sans-serif";ctx.fillText(ymax.toFixed(2)+" g",4,25);ctx.fillText(ymin.toFixed(2)+" g",4,h-p);ctx.fillText(xmin.toFixed(1)+" s",p,h-20);ctx.fillText(xmax.toFixed(1)+" s",w-75,h-20);
- ctx.strokeStyle="#087f9c";ctx.lineWidth=3;ctx.beginPath();d.forEach((r,i)=>{const x=p+(r.elapsed-xmin)/(xmax-xmin)*(w-p-20),y=15+(ymax-r.value)/(ymax-ymin)*(h-p-15);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+ const pts=d.map(r=>({r,x:p+(r.elapsed-xmin)/(xmax-xmin)*(w-p-20),y:15+(ymax-r.value)/(ymax-ymin)*(h-p-15)}));
+ ctx.strokeStyle="#7aa9d8";ctx.lineWidth=2;ctx.beginPath();pts.forEach((pt,i)=>i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y));ctx.stroke();
+ pts.forEach(pt=>{
+   const color=pt.r.kind==="写真"?"#e64a4a":pt.r.kind==="手動"?"#21a45b":"#1479df";
+   ctx.beginPath();ctx.arc(pt.x,pt.y,pt.r.kind==="写真"?6:5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.strokeStyle="#fff";ctx.lineWidth=1.5;ctx.stroke();
+ });
+ c._points=pts;
 }
+function pointFromEvent(c,e){
+ const rect=c.getBoundingClientRect(),sx=c.width/rect.width,sy=c.height/rect.height;
+ const x=(e.clientX-rect.left)*sx,y=(e.clientY-rect.top)*sy;
+ let best=null,dist=Infinity;(c._points||[]).forEach(pt=>{const d=Math.hypot(pt.x-x,pt.y-y);if(d<dist){dist=d;best=pt}});
+ return dist<=14?best:null;
+}
+function showPointTooltip(e,pt){
+ const tip=$("chartTooltip"),r=pt.r;
+ const method=r.kind==="自動"?"自動記録":r.kind==="手動"?"手動記録":"写真";
+ tip.innerHTML=`<b>${r.value.toFixed(2)} ${r.unit}</b><br>経過時間：${r.elapsed.toFixed(2)} s<br>時刻：${r.time.toLocaleTimeString("ja-JP",{hour12:false})}<br>記録：${method}${r.photo?`<img src="${r.photo}" alt="撮影画像">`:""}`;
+ tip.style.display="block";
+ const wrap=tip.parentElement,wr=wrap.getBoundingClientRect();
+ let left=e.clientX-wr.left+12,top=e.clientY-wr.top+12;
+ if(left+270>wr.width)left=Math.max(5,left-285);if(top+220>wr.height)top=Math.max(5,top-225);
+ tip.style.left=left+"px";tip.style.top=top+"px";
+}
+$("chart").addEventListener("click",e=>{const pt=pointFromEvent($("chart"),e);if(pt)showPointTooltip(e,pt);else $("chartTooltip").style.display="none"});
+$("chart").addEventListener("mousemove",e=>{$("chart").style.cursor=pointFromEvent($("chart"),e)?"pointer":"default"});
+document.addEventListener("click",e=>{if(!e.target.closest(".chart-wrap"))$("chartTooltip").style.display="none"});
+
 function clearData(){records=[];photos=[];startTime=null;render();renderPhotos();msg("データを消去しました。")}
 function csv(){
  if(!records.length){msg("保存するデータがありません。");return}
@@ -150,7 +187,7 @@ function csv(){
  const blob=new Blob(["\ufeff"+rows.map(r=>r.join(",")).join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="balance_data.csv";a.click();URL.revokeObjectURL(a.href);
 }
 function openOverlay(id){$(id).classList.add("show");document.body.style.overflow="hidden";if(id==="chartOverlay")drawChart($("fsChart"));if(id==="cameraOverlay")listCameras()}
-function closeOverlay(){document.querySelectorAll(".overlay.show").forEach(x=>x.classList.remove("show"));document.body.style.overflow=""}
+function closeOverlay(){document.querySelectorAll(".overlay.show").forEach(x=>x.classList.remove("show"));document.body.style.overflow="";if($("fsPointTip"))$("fsPointTip").style.display="none"}
 async function listCameras(){
  if(!navigator.mediaDevices?.enumerateDevices){msg("カメラ機能を利用できません。");return}
  const ds=await navigator.mediaDevices.enumerateDevices(),cams=ds.filter(d=>d.kind==="videoinput"),s=$("cameraSelect"),old=s.value;s.innerHTML='<option value="">カメラを選択</option>';
@@ -165,7 +202,7 @@ async function capture(){
  if(!cameraStream||!latest){msg("カメラと天びんの測定値を確認してください。");return}
  await request("写真確認",false);await sleep(220);const v=$("inlineVideo")?.videoWidth?$("inlineVideo"):$("video");if(!v.videoWidth)return;
  const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);const elapsed=startTime?(performance.now()-startTime)/1000:0;
- const p={image:c.toDataURL("image/jpeg",.88),value:latest.value,unit:latest.unit,stable:latest.stable,time:new Date(),elapsed};photos.push(p);addRecord(p.value,p.unit,p.stable,"写真");renderPhotos();
+ const p={image:c.toDataURL("image/jpeg",.88),value:latest.value,unit:latest.unit,stable:latest.stable,time:new Date(),elapsed};photos.push(p);const rec=addRecord(p.value,p.unit,p.stable,"写真");rec.photo=p.image;render();renderPhotos();
 }
 function renderPhotos(){
  const p=photos.at(-1);if(p){$("latestPhoto").src=p.image;$("latestPhoto").style.display="block";$("latestMeta").innerHTML=`${p.time.toLocaleTimeString("ja-JP",{hour12:false})}<br><b>${p.value.toFixed(2)} ${p.unit}</b> ／ ${p.stable?"安定":"変動中"}`}else{$("latestPhoto").style.display="none";$("latestMeta").textContent="まだ写真はありません。"}
@@ -180,5 +217,13 @@ if($("inlineCapture"))$("inlineCapture").onclick=capture;
 if($("inlineCameraSelect"))$("inlineCameraSelect").onchange=()=>{if(cameraStream)startCamera()};
 listCameras();
 $("camStart").onclick=startCamera;$("camStop").onclick=stopCamera;$("capture").onclick=capture;$("cameraSelect").onchange=()=>{if(cameraStream)startCamera()};
+
+$("fsChart").addEventListener("click",e=>{
+ const pt=pointFromEvent($("fsChart"),e),tip=$("fsPointTip");if(!pt){tip.style.display="none";return}
+ const r=pt.r;tip.innerHTML=`<b>${r.value.toFixed(2)} ${r.unit}</b><br>経過時間：${r.elapsed.toFixed(2)} s<br>時刻：${r.time.toLocaleTimeString("ja-JP",{hour12:false})}<br>記録：${r.kind}${r.photo?`<img src="${r.photo}" alt="撮影画像">`:""}`;
+ tip.style.left=Math.min(e.clientX+12,window.innerWidth-315)+"px";tip.style.top=Math.min(e.clientY+12,window.innerHeight-230)+"px";tip.style.display="block";
+});
+$("fsChart").addEventListener("mousemove",e=>{$("fsChart").style.cursor=pointFromEvent($("fsChart"),e)?"pointer":"default"});
+
 buttons();drawChart($("chart"));
-</script></body></html>
+</script><div id="fsPointTip" class="fs-point-tip"></div></body></html>
