@@ -7,26 +7,59 @@
 :root{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif;color:#172b3a;background:#f3f7f9;--teal:#00889a;--line:#d8e3e8;--blue:#0b79dc}
 *{box-sizing:border-box}body{margin:0;background:#f3f7f9}button,select{font:inherit}button{cursor:pointer}
 .topbar{min-height:76px;background:linear-gradient(90deg,#007487,#00889a);color:#fff;display:flex;align-items:center;padding:0 28px;gap:24px}.brand{font-size:30px;font-weight:750}.title{font-size:22px;font-weight:650}.top-actions{margin-left:auto;display:flex;gap:9px;align-items:center}.top-actions button{border:1px solid #ffffff88;background:#ffffff15;color:#fff;padding:9px 13px;border-radius:8px}.status{padding:7px 11px;border-radius:999px;background:#ffffff22;font-size:13px}.status.on{background:#dff6e3;color:#176b2c}
-.content{display:grid;grid-template-columns:290px 1fr;gap:16px;padding:18px;max-width:1500px;margin:auto}.sidebar{display:flex;flex-direction:column;gap:14px}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #1b38490d}.side{padding:17px}.side h2{font-size:17px;margin:0 0 14px}.current{text-align:center}.value{font-size:57px;font-weight:750;font-variant-numeric:tabular-nums}.unit{font-size:24px;font-weight:600}.stability{display:inline-block;margin-top:12px;padding:6px 22px;border-radius:999px;background:#edf1f3;font-weight:650}.stable{background:#dff5df;color:#177329}.unstable{background:#fff0d8;color:#9b5a00}
+.content{display:grid;grid-template-columns:270px 1fr;gap:16px;padding:18px;max-width:1500px;margin:auto}.sidebar{display:flex;flex-direction:column;gap:14px}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #1b38490d}.side{padding:17px}.side h2{font-size:17px;margin:0 0 14px}.current{text-align:center}.value{font-size:57px;font-weight:750;font-variant-numeric:tabular-nums}.unit{font-size:24px;font-weight:600}.stability{display:inline-block;margin-top:12px;padding:6px 22px;border-radius:999px;background:#edf1f3;font-weight:650}.stable{background:#dff5df;color:#177329}.unstable{background:#fff0d8;color:#9b5a00}
 .field{display:grid;grid-template-columns:90px 1fr;align-items:center;gap:10px;margin:11px 0}.field label{font-size:14px;font-weight:600}select{width:100%;padding:9px;border:1px solid #cbd8df;border-radius:8px;background:#fff}.controls{display:grid;gap:9px;margin-top:15px}.btn{border:0;border-radius:8px;padding:11px;font-weight:650;background:#e8eef2;color:#213746}.btn.primary{background:var(--blue);color:#fff}.btn.stop{background:#6f8291;color:#fff}.btn.outline{background:#fff;border:1px solid #cbd8df}.btn:disabled{opacity:.45}.msg{font-size:12px;color:#526171;min-height:17px}
-.main{min-width:0}.tabs{display:flex;padding:0 16px;border-bottom:1px solid var(--line)}.tab{padding:15px 28px;font-weight:650;color:#536574;border-bottom:3px solid transparent;cursor:pointer}.tab.active{color:var(--blue);border-color:var(--blue)}.tab-panel{display:none}.tab-panel.active{display:block}.chart-wrap{padding:18px 20px}.chart-head{display:flex;align-items:center;justify-content:space-between}.chart-head h2{font-size:17px}.stats{display:flex;gap:16px;font-size:13px;color:#526171}.stats b{color:#223746}canvas{display:block;width:100%;height:330px;background:#fff}.data-title{padding:13px 18px;background:#f4f7f9;font-weight:700;border-top:1px solid var(--line)}.table-wrap{max-height:330px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th{position:sticky;top:0;background:#eef3f6}th,td{padding:9px 12px;border-bottom:1px solid #e5ebef;text-align:right}th:first-child,td:first-child{text-align:left}
+.main{min-width:0}.tabs{display:flex;padding:0 16px;border-bottom:1px solid var(--line)}.tab{padding:15px 28px;font-weight:650;color:#536574;border-bottom:3px solid transparent;cursor:pointer}.tab.active{color:var(--blue);border-color:var(--blue)}.tab-panel{display:none}.tab-panel.active{display:block}.chart-wrap{padding:18px 20px}.chart-head{display:flex;align-items:center;justify-content:space-between}.chart-head h2{font-size:17px}.stats{display:flex;gap:16px;font-size:13px;color:#526171}.stats b{color:#223746}canvas{display:block;width:100%;height:285px;background:#fff}.data-title{padding:13px 18px;background:#f4f7f9;font-weight:700;border-top:1px solid var(--line)}.table-wrap{max-height:330px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th{position:sticky;top:0;background:#eef3f6}th,td{padding:9px 12px;border-bottom:1px solid #e5ebef;text-align:right}th:first-child,td:first-child{text-align:left}
 .fsbtn{border:1px solid #cbd8df;background:#fff;border-radius:8px;padding:7px 10px;font-weight:650}.wide{width:100%;margin-top:14px}.overlay{position:fixed;inset:0;z-index:9999;background:#f3f7f9;display:none;flex-direction:column}.overlay.show{display:flex}.ovbar{height:68px;background:linear-gradient(90deg,#007487,#00889a);color:#fff;display:flex;align-items:center;padding:0 24px;font-size:20px;font-weight:700}.back{margin-left:auto;border:1px solid #ffffff88;background:#ffffff15;color:#fff;border-radius:8px;padding:9px 16px}.ovcontent{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:28px}.big{text-align:center}.big .n{font-size:min(20vw,210px);font-weight:780}.big .u{font-size:min(7vw,72px);font-weight:650}.big .stability{font-size:28px;padding:10px 38px}.fschartbox{width:100%;height:100%;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column}#fsChart{height:100%;min-height:0}
 .camera-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.7fr);gap:18px;padding:18px}.preview{background:#111;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}#video{width:100%;height:100%;object-fit:contain}.camside{display:flex;flex-direction:column;gap:12px;overflow:auto}.camcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}.camcard h3{margin:0 0 10px}.camactions{display:grid;gap:8px}.camactions button{padding:10px;border:1px solid #cbd8df;background:#fff;border-radius:8px;font-weight:650}.camactions .capture{background:var(--blue);color:#fff;border:0}.camactions button:disabled{opacity:.45}#latestPhoto{width:100%;aspect-ratio:4/3;object-fit:contain;background:#eef2f4;border-radius:8px;display:none}.photogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.photo{border:1px solid var(--line);border-radius:8px;overflow:hidden}.photo img{width:100%;aspect-ratio:4/3;object-fit:cover}.photoinfo{padding:7px;font-size:12px}
+
+.inline-camera{margin-top:16px;padding-top:14px;border-top:1px solid #d8e3e8}
+.inline-camera-head{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin-bottom:8px}
+.inline-camera-head select{padding:7px;font-size:12px}.cam-status{font-size:11px;padding:5px 7px;border-radius:999px;background:#edf1f3}.cam-status.on{background:#dff5df;color:#177329}
+.inline-preview{height:175px;background:#111;border-radius:9px;overflow:hidden;display:flex;align-items:center;justify-content:center}.inline-preview video{width:100%;height:100%;object-fit:contain}
+.inline-cam-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.inline-cam-actions .primary{grid-column:1/-1;padding:9px}
+.inline-photos{display:flex;gap:6px;overflow-x:auto;margin-top:8px}.inline-photo{min-width:72px;width:72px}.inline-photo img{width:72px;height:54px;object-fit:cover;border-radius:6px}.inline-photo div{font-size:10px;line-height:1.3}
+.graph-settings{border-top:1px solid #d8e3e8;padding:14px 20px 16px;background:#fbfcfd}.graph-settings h2{font-size:16px;margin:0 0 10px}.settings-row{display:grid;grid-template-columns:1.2fr 1.2fr 1fr 1fr 1fr 1fr;gap:8px;align-items:end}.setting-field label{display:block;font-size:12px;font-weight:650;margin-bottom:4px}.setting-field select{padding:8px}.graph-settings .btn{padding:9px 7px;font-size:13px}
 @media(max-width:850px){.content{grid-template-columns:1fr}.topbar{flex-wrap:wrap;padding:14px 18px}.top-actions{width:100%;margin-left:0}.camera-body{grid-template-columns:1fr}.stats{flex-wrap:wrap}}
 </style></head>
 <body>
 <header class="topbar"><div class="brand">Kenis</div><div class="title">電子てんびん Webアプリ</div><div class="top-actions"><span id="conn" class="status">未接続</span><button id="connect">天びんに接続</button><button id="disconnect" disabled>切断</button><button id="csv">CSV保存</button></div></header>
 <div class="content">
 <aside class="sidebar">
-<section class="panel side"><h2>現在の質量</h2><div class="current"><span id="weight" class="value">--.--</span><span id="unit" class="unit">g</span><br><span id="stability" class="stability">未測定</span></div><button id="valueFS" class="fsbtn wide">⛶ 測定値を全画面</button></section>
-<section class="panel side"><h2>測定設定</h2>
-<div class="field"><label>測定間隔</label><select id="interval"><option value="200">0.2秒</option><option value="500">0.5秒</option><option value="1000" selected>1秒</option><option value="2000">2秒</option><option value="5000">5秒</option><option value="10000">10秒</option></select></div>
-<div class="field"><label>測定時間</label><select id="duration"><option value="0">制限なし</option><option value="10">10秒</option><option value="30">30秒</option><option value="60" selected>1分</option><option value="300">5分</option><option value="600">10分</option><option value="1800">30分</option><option value="3600">60分</option></select></div>
-<div class="controls"><button id="start" class="btn primary" disabled>▶ 記録開始</button><button id="stop" class="btn stop" disabled>■ 記録停止</button><button id="single" class="btn outline" disabled>● 現在値を記録</button><button id="camera" class="btn outline">📷 カメラ・写真</button><button id="clear" class="btn outline">データを消去</button></div><p id="message" class="msg"></p></section>
+<section class="panel side"><h2>現在の質量</h2><div class="current"><span id="weight" class="value">--.--</span><span id="unit" class="unit">g</span><br><span id="stability" class="stability">未測定</span></div><button id="valueFS" class="fsbtn wide">⛶ 測定値を全画面</button>
+<div class="inline-camera">
+  <div class="inline-camera-head">
+    <b>カメラ</b>
+    <select id="inlineCameraSelect"><option value="">カメラを選択</option></select>
+    <span id="camStatus" class="cam-status">未接続</span>
+  </div>
+  <div class="inline-preview"><video id="inlineVideo" autoplay playsinline muted></video></div>
+  <div class="inline-cam-actions">
+    <button id="inlineCamStart" class="fsbtn">カメラ開始</button>
+    <button id="inlineCamStop" class="fsbtn" disabled>切断</button>
+    <button id="inlineCapture" class="btn primary" disabled>📷 写真＋現在値を記録</button>
+  </div>
+  <div id="inlinePhotos" class="inline-photos"></div>
+</div>
+</section>
+
 </aside>
 <main class="main panel">
 <nav class="tabs"><div class="tab active" data-tab="graph">グラフ</div><div class="tab" data-tab="data">測定データ</div></nav>
-<div id="graph" class="tab-panel active"><div class="chart-wrap"><div class="chart-head"><h2>質量 [g]</h2><button id="chartFS" class="fsbtn">⛶ グラフを全画面</button></div><div class="stats"><span>測定回数 <b id="count">0</b></span><span>経過時間 <b id="elapsed">0.0 s</b></span><span>状態 <b id="state">待機</b></span></div><canvas id="chart" width="1100" height="330"></canvas></div></div>
+<div id="graph" class="tab-panel active"><div class="chart-wrap"><div class="chart-head"><h2>質量 [g]</h2><button id="chartFS" class="fsbtn">⛶ グラフを全画面</button></div><div class="stats"><span>測定回数 <b id="count">0</b></span><span>経過時間 <b id="elapsed">0.0 s</b></span><span>状態 <b id="state">待機</b></span></div><canvas id="chart" width="1100" height="330"></canvas></div>
+<div class="graph-settings">
+  <h2>測定設定</h2>
+  <div class="settings-row">
+    <div class="setting-field"><label>測定間隔</label><select id="interval"><option value="200">0.2秒</option><option value="500">0.5秒</option><option value="1000" selected>1秒</option><option value="2000">2秒</option><option value="5000">5秒</option><option value="10000">10秒</option></select></div>
+    <div class="setting-field"><label>測定時間</label><select id="duration"><option value="0">制限なし</option><option value="10">10秒</option><option value="30">30秒</option><option value="60" selected>1分</option><option value="300">5分</option><option value="600">10分</option><option value="1800">30分</option><option value="3600">60分</option></select></div>
+    <button id="start" class="btn primary" disabled>▶ 記録開始</button>
+    <button id="stop" class="btn stop" disabled>■ 記録停止</button>
+    <button id="single" class="btn outline" disabled>● 現在値を記録</button>
+    <button id="clear" class="btn outline">データを消去</button>
+  </div>
+  <p id="message" class="msg"></p>
+</div>
+</div>
 <div id="data" class="tab-panel"><div class="data-title">測定データ一覧</div><div class="table-wrap"><table><thead><tr><th>時刻</th><th>経過時間 [s]</th><th>質量 [g]</th><th>安定</th><th>記録方法</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
 </main></div>
 
@@ -122,24 +155,30 @@ async function listCameras(){
  if(!navigator.mediaDevices?.enumerateDevices){msg("カメラ機能を利用できません。");return}
  const ds=await navigator.mediaDevices.enumerateDevices(),cams=ds.filter(d=>d.kind==="videoinput"),s=$("cameraSelect"),old=s.value;s.innerHTML='<option value="">カメラを選択</option>';
  cams.forEach((d,i)=>{const o=document.createElement("option");o.value=d.deviceId;o.textContent=d.label||`カメラ ${i+1}`;s.appendChild(o)});if([...s.options].some(o=>o.value===old))s.value=old;
+ const ins=$("inlineCameraSelect");if(ins){const prev=ins.value;ins.innerHTML=s.innerHTML;if([...ins.options].some(o=>o.value===prev))ins.value=prev;}
 }
 async function startCamera(){
- try{stopCamera();const id=$("cameraSelect").value;cameraStream=await navigator.mediaDevices.getUserMedia({video:id?{deviceId:{exact:id}}:true,audio:false});$("video").srcObject=cameraStream;$("camStart").disabled=true;$("camStop").disabled=false;$("capture").disabled=false;await listCameras();const d=cameraStream.getVideoTracks()[0].getSettings().deviceId;if(d)$("cameraSelect").value=d}catch(e){msg("カメラを開始できませんでした: "+e.message)}
+ try{stopCamera();const id=($("inlineCameraSelect")?.value||$("cameraSelect").value);cameraStream=await navigator.mediaDevices.getUserMedia({video:id?{deviceId:{exact:id}}:true,audio:false});$("video").srcObject=cameraStream;if($("inlineVideo"))$("inlineVideo").srcObject=cameraStream;$("camStart").disabled=true;$("camStop").disabled=false;$("capture").disabled=false;if($("inlineCamStart"))$("inlineCamStart").disabled=true;if($("inlineCamStop"))$("inlineCamStop").disabled=false;if($("inlineCapture"))$("inlineCapture").disabled=false;if($("camStatus")){$("camStatus").textContent="接続中";$("camStatus").className="cam-status on";}await listCameras();const d=cameraStream.getVideoTracks()[0].getSettings().deviceId;if(d)$("cameraSelect").value=d}catch(e){msg("カメラを開始できませんでした: "+e.message)}
 }
-function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}$("video").srcObject=null;$("camStart").disabled=false;$("camStop").disabled=true;$("capture").disabled=true}
+function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}$("video").srcObject=null;if($("inlineVideo"))$("inlineVideo").srcObject=null;$("camStart").disabled=false;$("camStop").disabled=true;$("capture").disabled=true;if($("inlineCamStart"))$("inlineCamStart").disabled=false;if($("inlineCamStop"))$("inlineCamStop").disabled=true;if($("inlineCapture"))$("inlineCapture").disabled=true;if($("camStatus")){$("camStatus").textContent="未接続";$("camStatus").className="cam-status";}}
 async function capture(){
  if(!cameraStream||!latest){msg("カメラと天びんの測定値を確認してください。");return}
- await request("写真確認",false);await sleep(220);const v=$("video");if(!v.videoWidth)return;
+ await request("写真確認",false);await sleep(220);const v=$("inlineVideo")?.videoWidth?$("inlineVideo"):$("video");if(!v.videoWidth)return;
  const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);const elapsed=startTime?(performance.now()-startTime)/1000:0;
  const p={image:c.toDataURL("image/jpeg",.88),value:latest.value,unit:latest.unit,stable:latest.stable,time:new Date(),elapsed};photos.push(p);addRecord(p.value,p.unit,p.stable,"写真");renderPhotos();
 }
 function renderPhotos(){
  const p=photos.at(-1);if(p){$("latestPhoto").src=p.image;$("latestPhoto").style.display="block";$("latestMeta").innerHTML=`${p.time.toLocaleTimeString("ja-JP",{hour12:false})}<br><b>${p.value.toFixed(2)} ${p.unit}</b> ／ ${p.stable?"安定":"変動中"}`}else{$("latestPhoto").style.display="none";$("latestMeta").textContent="まだ写真はありません。"}
- $("photoGrid").innerHTML=photos.slice().reverse().map(x=>`<div class="photo"><img src="${x.image}"><div class="photoinfo"><b>${x.value.toFixed(2)} ${x.unit}</b><br>${x.time.toLocaleTimeString("ja-JP",{hour12:false})}</div></div>`).join("");
+ $("photoGrid").innerHTML=photos.slice().reverse().map(x=>`<div class="photo"><img src="${x.image}"><div class="photoinfo"><b>${x.value.toFixed(2)} ${x.unit}</b><br>${x.time.toLocaleTimeString("ja-JP",{hour12:false})}</div></div>`).join("");if($("inlinePhotos"))$("inlinePhotos").innerHTML=photos.slice(-4).reverse().map(x=>`<div class="inline-photo"><img src="${x.image}"><div>${x.value.toFixed(2)} ${x.unit}<br>${x.time.toLocaleTimeString("ja-JP",{hour12:false})}</div></div>`).join("");
 }
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab-panel").forEach(x=>x.classList.remove("active"));t.classList.add("active");$(t.dataset.tab).classList.add("active")});
 $("connect").onclick=connect;$("disconnect").onclick=disconnect;$("start").onclick=startRecording;$("stop").onclick=stopRecording;$("single").onclick=()=>request("手動",true);$("clear").onclick=clearData;$("csv").onclick=csv;
-$("valueFS").onclick=()=>openOverlay("valueOverlay");$("chartFS").onclick=()=>openOverlay("chartOverlay");$("camera").onclick=()=>openOverlay("cameraOverlay");document.querySelectorAll(".close").forEach(b=>b.onclick=closeOverlay);document.addEventListener("keydown",e=>{if(e.key==="Escape")closeOverlay()});
+$("valueFS").onclick=()=>openOverlay("valueOverlay");$("chartFS").onclick=()=>openOverlay("chartOverlay");document.querySelectorAll(".close").forEach(b=>b.onclick=closeOverlay);document.addEventListener("keydown",e=>{if(e.key==="Escape")closeOverlay()});
+if($("inlineCamStart"))$("inlineCamStart").onclick=startCamera;
+if($("inlineCamStop"))$("inlineCamStop").onclick=stopCamera;
+if($("inlineCapture"))$("inlineCapture").onclick=capture;
+if($("inlineCameraSelect"))$("inlineCameraSelect").onchange=()=>{if(cameraStream)startCamera()};
+listCameras();
 $("camStart").onclick=startCamera;$("camStop").onclick=stopCamera;$("capture").onclick=capture;$("cameraSelect").onchange=()=>{if(cameraStream)startCamera()};
 buttons();drawChart($("chart"));
 </script></body></html>
